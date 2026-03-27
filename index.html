@@ -19,7 +19,6 @@ body {
   min-height: 100vh; background: #E8E8ED; color: var(--tx);
   -webkit-font-smoothing: antialiased; padding-bottom: 90px; overflow-x: hidden;
 }
-/* iOS 26 Mesh Gradient Background */
 .mesh-bg {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
   background-image: 
@@ -32,7 +31,6 @@ body {
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(255,69,58,0.2)} 70%{box-shadow:0 0 0 20px rgba(255,69,58,0)} 100%{box-shadow:0 0 0 0 rgba(255,69,58,0)} }
-/* iOS 26 Ultra Glass */
 .gl {
   background: var(--gl); -webkit-backdrop-filter: blur(60px) saturate(220%); backdrop-filter: blur(60px) saturate(220%);
   border: 1px solid rgba(255,255,255,0.6); border-radius: 28px;
@@ -42,7 +40,6 @@ body {
 button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: all .15s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; cursor: pointer; }
 button:active { transform: scale(.95); opacity: 0.8; }
 button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-/* Floating Dynamic Navigation */
 .btab-container { position: fixed; bottom: env(safe-area-inset-bottom, 16px); left: 16px; right: 16px; z-index: 100; display: flex; justify-content: center; }
 .btab {
   display: flex; background: rgba(255,255,255,0.75); -webkit-backdrop-filter: blur(40px) saturate(200%); backdrop-filter: blur(40px) saturate(200%);
@@ -57,8 +54,6 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 .fi:focus { border-color: rgba(88,86,214,0.4); background: #FFF; box-shadow: 0 0 0 4px rgba(88,86,214,0.1); }
 .card-note { background: #FFF; border-radius: 20px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); margin-bottom: 12px; animation: slideUp .4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(0,0,0,0.03); }
 .spinner { border: 3px solid rgba(88,86,214,0.2); border-top: 3px solid #5856D6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-/* Gradien Khusus Executive Summary */
 .exec-card { background: linear-gradient(135deg, rgba(191,90,242,0.05), rgba(88,86,214,0.05)); border: 1px solid rgba(191,90,242,0.2); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -71,16 +66,22 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 <script>
 var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
 
-/* ═══ STORAGE (Bump to v7) ═══ */
+/* ═══ STORAGE (v8) ═══ */
 var DB={
-  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v7")||"null")||this.def()}catch(e){return this.def()}},
+  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v8")||"null")||this.def()}catch(e){return this.def()}},
   def:function(){return{history:[],set:{lang:"id-ID",key:"",provider:"groq", chunk: 30}}},
-  save:function(d){localStorage.setItem("notulen_v7",JSON.stringify(d))},
+  save:function(d){localStorage.setItem("notulen_v8",JSON.stringify(d))},
   addHist:function(r){var d=this.get();d.history.unshift(r);if(d.history.length>50)d.history.length=50;this.save(d)},
   delHist:function(id){var d=this.get();d.history=d.history.filter(function(x){return x.id!==id});this.save(d)},
   getSet:function(){return this.get().set},
   updSet:function(k,v){var d=this.get();d.set[k]=v;this.save(d);window.__AK=d.set.key}
 };
+
+/* ═══ CLEANER (Menghapus bintang markdown dari AI) ═══ */
+function cleanMD(str) {
+  if(!str) return "";
+  return str.replace(/\*\*/g, '').replace(/^\*/gm, '•').replace(/ \*/g, ' •');
+}
 
 /* ═══ ICON ═══ */
 function Ic(p){
@@ -121,25 +122,24 @@ function transcribeAudio(audioBlob, lang, key){
 function aiSummarizeChunk(text, lang, key){
   return new Promise(function(resolve, reject){
     var prompt = lang==="id-ID"
-      ? "Buat ringkasan singkat (1-3 poin utama) dari transkrip rapat 30 detik ini. Langsung berikan poinnya tanpa basa-basi.\n\nTranskrip:\n" + text
-      : "Extract key bullet points from this short meeting chunk. Concise only, no intro.\n\nTranscript:\n" + text;
+      ? "Buat ringkasan singkat (1-3 poin) dari transkrip 30 detik ini. Jangan gunakan format markdown (seperti bintang/bold). Berikan poin langsung.\n\nTranskrip:\n" + text
+      : "Extract key bullet points from this short meeting chunk. Plain text only, NO markdown formatting.\n\nTranscript:\n" + text;
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are a concise meeting assistant."},{role:"user",content:prompt}], temperature: 0.3, max_tokens: 300 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are a concise meeting assistant. You output plain text without formatting."},{role:"user",content:prompt}], temperature: 0.3, max_tokens: 300 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
 }
 
-// NEW: OVERALL EXECUTIVE SUMMARY
 function aiSummarizeOverall(text, lang, key){
   return new Promise(function(resolve, reject){
     var prompt = lang==="id-ID"
-      ? "Buat Ringkasan Eksekutif komprehensif dari seluruh transkrip rapat ini. Sertakan bagian: 1. Topik Utama, 2. Keputusan, 3. Tindak Lanjut (Action Items). Gunakan bahasa profesional.\n\nTranskrip:\n" + text
-      : "Create a comprehensive Executive Summary of this entire meeting transcript. Include sections: 1. Main Topics, 2. Decisions Made, 3. Action Items. Professional tone.\n\nTranscript:\n" + text;
+      ? "Buat Ringkasan Eksekutif komprehensif dari transkrip ini. Sertakan bagian: Topik Utama, Keputusan, Tindak Lanjut. PENTING: Jangan gunakan format markdown (bold/bintang). Gunakan list biasa.\n\nTranskrip:\n" + text
+      : "Create a comprehensive Executive Summary. Include: Main Topics, Decisions, Action Items. IMPORTANT: Use plain text only, NO markdown asterisks.\n\nTranscript:\n" + text;
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are an expert executive secretary."},{role:"user",content:prompt}], temperature: 0.4, max_tokens: 1500 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are an expert executive secretary. No markdown."},{role:"user",content:prompt}], temperature: 0.4, max_tokens: 1500 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
@@ -175,11 +175,10 @@ function LevelMeter(p){
 }
 
 /* ═══════════════════════════════════════
-   TAB: REKAM — LIVE CHUNKING & OVERALL SUMMARY
+   TAB: REKAM 
    ═══════════════════════════════════════ */
 function RecTab(p){
   var set = p.set, updSet = p.updSet, onSaveComplete = p.onSaveComplete;
-  
   var _isRec=us(false), isRec=_isRec[0], setRec=_isRec[1];
   var _time=us(0), time=_time[0], setTime=_time[1];
   var _title=us(""), title=_title[0], setTitle=_title[1];
@@ -199,33 +198,28 @@ function RecTab(p){
   function addFin(data){ setFin(function(p){ var n=p.concat([data]); finRef.current=n; return n; }); }
   function addNote(data){ setNotes(function(p){ var n=p.concat([data]); notesRef.current=n; return n; }); }
 
-  /* ── Auto-Save & Executive Summary Logic ── */
   function autoSaveIfDone() {
     if (!isRecRef.current && pendingReqs.current === 0 && !isFinalizingRef.current) {
       if (finRef.current.length === 0) { setSaving(false); return; }
       
       isFinalizingRef.current = true;
-      setStatusMsg("Menganalisis Rapat Secara Keseluruhan...");
+      setStatusMsg("Menganalisis Rapat Keseluruhan...");
       
       var finalRaw = finRef.current.map(function(x){return "[Menit "+fmt(x.time)+"] "+x.text}).join("\n\n");
       var finalSumChunk = notesRef.current.map(function(x){return "[Menit "+fmt(x.time)+"]\n"+x.text}).join("\n\n");
 
-      // Panggil AI untuk Ringkasan Eksekutif Total
       aiSummarizeOverall(finalRaw, set.lang, window.__AK)
         .then(function(overallSum){
           DB.addHist({
             id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current,
             title: titleRef.current || ("Rapat " + new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})),
-            transcript: finalRaw, notes: finalSumChunk, overall: overallSum
+            transcript: finalRaw, notes: cleanMD(finalSumChunk), overall: cleanMD(overallSum)
           });
           setSaving(false); onSaveComplete(); resetAll();
         })
         .catch(function(err){
-          alert("Gagal membuat ringkasan akhir: " + err.message + "\n(Menyimpan data parsial)");
-          DB.addHist({
-            id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current,
-            title: titleRef.current, transcript: finalRaw, notes: finalSumChunk, overall: "Gagal memproses ringkasan akhir."
-          });
+          alert("Gagal AI: " + err.message + "\n(Menyimpan parsial)");
+          DB.addHist({ id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current, title: titleRef.current, transcript: finalRaw, notes: cleanMD(finalSumChunk), overall: "Gagal memproses." });
           setSaving(false); onSaveComplete(); resetAll();
         });
     }
@@ -241,7 +235,7 @@ function RecTab(p){
         
         pendingReqs.current++;
         aiSummarizeChunk(cleanedText, set.lang, window.__AK)
-          .then(function(summary){ addNote({time: startTime, text: summary, id: Date.now()}); })
+          .then(function(summary){ addNote({time: startTime, text: cleanMD(summary), id: Date.now()}); })
           .catch(function(err){ console.log("AI Chunk Err:", err); })
           .finally(function(){ pendingReqs.current--; autoSaveIfDone(); });
       })
@@ -273,7 +267,6 @@ function RecTab(p){
       startRecordingCycle(stream);
       clockIntervalRef.current = setInterval(function(){ timeRef.current++; setTime(timeRef.current); }, 1000);
       
-      // Gunakan durasi chunk dari pengaturan (default 30 detik)
       var cDur = (set.chunk || 30) * 1000;
       loopIntervalRef.current = setInterval(function(){
         if(isRecRef.current && mrRef.current && mrRef.current.state === "recording"){
@@ -284,7 +277,7 @@ function RecTab(p){
   }
 
   function stopRec(){
-    isRecRef.current = false; setRec(false); setSaving(true); setStatusMsg("Sinkronisasi Transkrip...");
+    isRecRef.current = false; setRec(false); setSaving(true); setStatusMsg("Menyatukan Transkrip...");
     clearInterval(clockIntervalRef.current); clearInterval(loopIntervalRef.current);
     if(mrRef.current && mrRef.current.state === "recording") { mrRef.current.stop(); }
     if(streamRef.current){streamRef.current.getTracks().forEach(function(t){t.stop()}); streamRef.current=null;}
@@ -309,7 +302,7 @@ function RecTab(p){
 
     <div style=${{maxWidth:500,margin:"0 auto",padding:"0 16px 16px"}}>
 
-      <!-- STATUS CARD (The Island) -->
+      <!-- STATUS CARD -->
       <div className="gl" style=${{padding:24,textAlign:"center",marginBottom:20,position:"relative"}}>
         <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:isRec?"rgba(255,69,58,0.12)":"rgba(88,86,214,0.1)",color:isRec?"#FF453A":"#5856D6",animation:isRec?"ripple 2s infinite":"none",marginBottom:16,boxShadow:isRec?"0 0 20px rgba(255,69,58,0.2)":""}}>
           <${Ic} name=${isRec?"mic":"play"} size=${40}/>
@@ -344,20 +337,18 @@ function RecTab(p){
         </div>
       </div>
 
-      <!-- QUICK SETTINGS (Visible only when idle) -->
+      <!-- QUICK SETTINGS -->
       ${!isRec && time===0 && !saving ? h`<div className="gl" style=${{padding:16,marginBottom:20}}>
         <div style=${{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
            <div style=${{display:"flex",alignItems:"center",gap:8}}>
              <div style=${{width:28,height:28,borderRadius:10,background:"rgba(191,90,242,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#BF5AF2"}}><${Ic} name="settings" size=${16}/></div>
              <span style=${{fontWeight:700,fontSize:14}}>Pengaturan Cepat</span>
            </div>
-           <!-- Indikator API -->
            <div style=${{display:"flex",alignItems:"center",gap:6,fontSize:11,fontWeight:600,color:window.__AK?"#32D74B":"#FF453A"}}>
              <div style=${{width:8,height:8,borderRadius:4,background:window.__AK?"#32D74B":"#FF453A"}}></div>
              ${window.__AK ? "API Aktif" : "API Kosong"}
            </div>
         </div>
-
         <div style=${{display:"flex",gap:12}}>
           <div style=${{flex:1}}>
             <div style=${{fontSize:11,fontWeight:600,color:"#8E8E93",marginBottom:6}}>Bahasa</div>
@@ -380,28 +371,31 @@ function RecTab(p){
         </div>
       </div>` : null}
 
-      <!-- LIVE FEED -->
-      ${(notes.length > 0 || fin.length > 0) ? h`<div>
-        <div style=${{display:"flex",gap:12}}>
-           <div style=${{flex:1}}>
-             <div style=${{fontSize:11,fontWeight:700,color:"#BF5AF2",marginBottom:8,display:"flex",alignItems:"center",gap:6}}><${Ic} name="sparkle" size=${14}/> TIMELINE AI</div>
-             ${notes.map(function(n){
-               return h`<div key=${n.id} className="card-note" style=${{padding:"12px 14px"}}>
-                 <div style=${{fontSize:11,color:"#BF5AF2",fontWeight:800,marginBottom:6}}>Menit ${fmt(n.time)}</div>
-                 <div style=${{fontSize:13,lineHeight:1.6,color:"#1C1C1E",whiteSpace:"pre-wrap"}}>${n.text}</div>
-               </div>`
-             })}
-           </div>
-           <div style=${{flex:1}}>
-             <div style=${{fontSize:11,fontWeight:700,color:"#5856D6",marginBottom:8,display:"flex",alignItems:"center",gap:6}}><${Ic} name="text" size=${14}/> TRANSKRIP (RAW)</div>
-             ${fin.map(function(f){
-               return h`<div key=${f.id} className="card-note" style=${{padding:"12px 14px",background:"rgba(255,255,255,0.4)"}}>
-                 <div style=${{fontSize:11,color:"#5856D6",fontWeight:800,marginBottom:6}}>Menit ${fmt(f.time)}</div>
-                 <div style=${{fontSize:12,lineHeight:1.6,color:"#48484A"}}>${f.text}</div>
-               </div>`
-             })}
-           </div>
-        </div>
+      <!-- LIVE FEED: 1 KOLOM KE BAWAH -->
+      ${(notes.length > 0 || fin.length > 0) ? h`<div style=${{display:"flex",flexDirection:"column",gap:24,marginTop:10}}>
+         <!-- Kolom Timeline -->
+         <div>
+           <div style=${{fontSize:12,fontWeight:800,color:"#BF5AF2",marginBottom:12,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase"}}><${Ic} name="sparkle" size=${16}/> Timeline AI</div>
+           ${notes.length === 0 ? h`<div style=${{fontSize:13,color:"#8E8E93",fontStyle:"italic"}}>Menunggu proses AI...</div>` : null}
+           ${notes.map(function(n){
+             return h`<div key=${n.id} className="card-note" style=${{padding:"14px 16px"}}>
+               <div style=${{fontSize:11,color:"#BF5AF2",fontWeight:800,marginBottom:6}}>Menit ${fmt(n.time)}</div>
+               <div style=${{fontSize:14,lineHeight:1.6,color:"#1C1C1E",whiteSpace:"pre-wrap"}}>${n.text}</div>
+             </div>`
+           })}
+         </div>
+         
+         <!-- Kolom Transkrip -->
+         <div>
+           <div style=${{fontSize:12,fontWeight:800,color:"#5856D6",marginBottom:12,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase"}}><${Ic} name="text" size=${16}/> Transkrip Mentah</div>
+           ${fin.length === 0 ? h`<div style=${{fontSize:13,color:"#8E8E93",fontStyle:"italic"}}>Belum ada suara terekam...</div>` : null}
+           ${fin.map(function(f){
+             return h`<div key=${f.id} className="card-note" style=${{padding:"14px 16px",background:"rgba(255,255,255,0.4)"}}>
+               <div style=${{fontSize:11,color:"#5856D6",fontWeight:800,marginBottom:6}}>Menit ${fmt(f.time)}</div>
+               <div style=${{fontSize:13,lineHeight:1.6,color:"#48484A"}}>${f.text}</div>
+             </div>`
+           })}
+         </div>
       </div>` : null}
 
     </div>
@@ -449,7 +443,7 @@ function HistTab(){
             </button>
           </div>
 
-          <!-- EXECUTIVE SUMMARY (Overall) -->
+          <!-- EXECUTIVE SUMMARY -->
           ${item.overall ? h`<div style=${{marginBottom:20}}>
             <div style=${{fontSize:11,fontWeight:800,color:"#BF5AF2",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8,display:"flex",alignItems:"center",gap:6}}>
               <${Ic} name="sparkle" size=${14} color="#BF5AF2"/>Ringkasan Eksekutif
@@ -459,7 +453,7 @@ function HistTab(){
             </div>
           </div>` : null}
 
-          <!-- CHUNK SUMMARY (Timeline) -->
+          <!-- CHUNK SUMMARY -->
           ${item.notes ? h`<div style=${{marginBottom:20}}>
             <div style=${{fontSize:11,fontWeight:800,color:"#5856D6",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8,display:"flex",alignItems:"center",gap:6}}>
               <${Ic} name="clock" size=${14} color="#5856D6"/>Timeline (Chunk)
@@ -490,66 +484,72 @@ function SetTab(p){
   var _sk=us(false), sk=_sk[0], sSk=_sk[1];
 
   return h`<div style=${{padding:"24px 16px"}}>
-    <h2 style=${{fontSize:24,fontWeight:800,marginBottom:20,letterSpacing:"-0.5px"}}>Pengaturan</h2>
+    <h2 style=${{fontSize:24,fontWeight:800,marginBottom:20,letterSpacing:"-0.5px"}}>Sistem & Pengaturan</h2>
 
+    <!-- SATU KOTAK BESAR UNTUK SEMUA PENGATURAN -->
     <div className="gl" style=${{padding:20,marginBottom:16}}>
+      
+      <!-- Bagian 1: API KEY -->
       <div style=${{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
         <div style=${{width:32,height:32,borderRadius:10,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="key" size=${16}/></div>
         <span style=${{fontWeight:700,fontSize:16}}>API Key Integrasi</span>
       </div>
-      <div>
+      <div style=${{marginBottom:24}}>
         <div style=${{fontSize:12,fontWeight:600,color:"#8E8E93",marginBottom:6}}>Groq API Key</div>
         <div style=${{position:"relative"}}>
           <input class="fi" type=${sk?"text":"password"} placeholder="gsk_..." value=${set.key} onInput=${function(e){updSet("key",e.target.value)}} style=${{paddingRight:44,fontWeight:500,fontSize:14}}/>
           <button onClick=${function(){sSk(!sk)}} style=${{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",border:"none",background:"rgba(0,0,0,0.05)",borderRadius:8,padding:6}}><${Ic} name="eye" size=${16} color="#8E8E93"/></button>
         </div>
       </div>
-    </div>
 
-    <!-- PIPELINE INFO SECTION -->
-    <div className="gl" style=${{padding:20}}>
+      <!-- Garis Pemisah (Divider) -->
+      <div style=${{height:1, background:"rgba(0,0,0,0.08)", margin:"0 -20px 24px -20px"}}></div>
+
+      <!-- Bagian 2: PIPELINE AI -->
       <div style=${{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
         <div style=${{width:32,height:32,borderRadius:10,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#30B0C7"}}><${Ic} name="layers" size=${16}/></div>
         <span style=${{fontWeight:700,fontSize:16}}>Alur Pipeline AI (Smart Mode)</span>
       </div>
       
-      <div style=${{display:"flex",flexDirection:"column",gap:12}}>
+      <div style=${{display:"flex",flexDirection:"column",gap:16}}>
          <div style=${{display:"flex",gap:12}}>
-            <div style=${{width:24,height:24,borderRadius:12,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>1</div>
+            <div style=${{width:26,height:26,borderRadius:13,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>1</div>
             <div>
-               <div style=${{fontSize:13,fontWeight:700,color:"#1C1C1E"}}>Perekaman & Chunking</div>
-               <div style=${{fontSize:12,color:"#8E8E93",lineHeight:1.4,marginTop:2}}>Suara direkam via MediaRecorder dan dipotong otomatis setiap ${set.chunk||30} detik (background-safe).</div>
+               <div style=${{fontSize:14,fontWeight:700,color:"#1C1C1E"}}>Perekaman & Chunking</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.4,marginTop:4}}>Suara direkam via MediaRecorder dan dipotong otomatis setiap ${set.chunk||30} detik (background-safe).</div>
             </div>
          </div>
          <div style=${{display:"flex",gap:12}}>
-            <div style=${{width:24,height:24,borderRadius:12,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>2</div>
+            <div style=${{width:26,height:26,borderRadius:13,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>2</div>
             <div>
-               <div style=${{fontSize:13,fontWeight:700,color:"#1C1C1E"}}>Whisper Transkripsi</div>
-               <div style=${{fontSize:12,color:"#8E8E93",lineHeight:1.4,marginTop:2}}>Setiap potongan dikirim ke Groq (whisper-large-v3) untuk diubah menjadi teks mentah secara paralel.</div>
+               <div style=${{fontSize:14,fontWeight:700,color:"#1C1C1E"}}>Whisper Transkripsi</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.4,marginTop:4}}>Setiap potongan dikirim ke Groq (whisper-large-v3) untuk diubah menjadi teks mentah secara paralel.</div>
             </div>
          </div>
          <div style=${{display:"flex",gap:12}}>
-            <div style=${{width:24,height:24,borderRadius:12,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>3</div>
+            <div style=${{width:26,height:26,borderRadius:13,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>3</div>
             <div>
-               <div style=${{fontSize:13,fontWeight:700,color:"#1C1C1E"}}>Llama Timeline (Parsial)</div>
-               <div style=${{fontSize:12,color:"#8E8E93",lineHeight:1.4,marginTop:2}}>Teks mentah langsung diringkas menjadi poin-poin singkat untuk ditayangkan secara real-time.</div>
+               <div style=${{fontSize:14,fontWeight:700,color:"#1C1C1E"}}>Llama Timeline (Parsial)</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.4,marginTop:4}}>Teks mentah langsung diringkas menjadi poin-poin singkat untuk ditayangkan secara real-time.</div>
             </div>
          </div>
          <div style=${{display:"flex",gap:12}}>
-            <div style=${{width:24,height:24,borderRadius:12,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>4</div>
+            <div style=${{width:26,height:26,borderRadius:13,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>4</div>
             <div>
-               <div style=${{fontSize:13,fontWeight:700,color:"#BF5AF2"}}>Executive Summary Keseluruhan</div>
-               <div style=${{fontSize:12,color:"#8E8E93",lineHeight:1.4,marginTop:2}}>Saat rapat diakhiri, seluruh transkrip digabungkan dan LLM menghasilkan ringkasan eksekutif komprehensif.</div>
+               <div style=${{fontSize:14,fontWeight:700,color:"#BF5AF2"}}>Executive Summary Keseluruhan</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.4,marginTop:4}}>Saat rapat diakhiri, seluruh transkrip digabungkan dan LLM menghasilkan ringkasan eksekutif komprehensif.</div>
             </div>
          </div>
       </div>
-      <div style=${{marginTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",paddingTop:12,fontSize:11,color:"#C7C7CC",textAlign:"center"}}>v7.0 · iOS 26 Glassmorphism Build</div>
+      <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",fontSize:11,color:"#C7C7CC",textAlign:"center",letterSpacing:"0.5px"}}>
+        v8.0 · iOS 26 Glassmorphism Build
+      </div>
     </div>
   </div>`;
 }
 
 /* ═══════════════════════
-   MAIN APP (DYNAMIC NAVIGATION)
+   MAIN APP 
    ═══════════════════════ */
 function App(){
   var _tab=us("rec"), tab=_tab[0], setTab=_tab[1];
