@@ -71,18 +71,18 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 <script>
 var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
 
-/* ═══ STORAGE (v9) ═══ */
+/* ═══ STORAGE (v10) ═══ */
 var DB={
-  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v9")||"null")||this.def()}catch(e){return this.def()}},
+  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v10")||"null")||this.def()}catch(e){return this.def()}},
   def:function(){return{history:[],set:{lang:"id-ID",key:"",provider:"groq", chunk: 30}}},
-  save:function(d){localStorage.setItem("notulen_v9",JSON.stringify(d))},
+  save:function(d){localStorage.setItem("notulen_v10",JSON.stringify(d))},
   addHist:function(r){var d=this.get();d.history.unshift(r);if(d.history.length>50)d.history.length=50;this.save(d)},
   delHist:function(id){var d=this.get();d.history=d.history.filter(function(x){return x.id!==id});this.save(d)},
   getSet:function(){return this.get().set},
   updSet:function(k,v){var d=this.get();d.set[k]=v;this.save(d);window.__AK=d.set.key}
 };
 
-/* ═══ CLEANER (Menghapus Markdown secara Agresif) ═══ */
+/* ═══ CLEANER (Menghapus Markdown secara Agresif & Kalimat Pembuka) ═══ */
 function cleanMD(str) {
   if(!str) return "";
   return str
@@ -90,7 +90,36 @@ function cleanMD(str) {
     .replace(/\*(.*?)\*/g, '$1')     // Hapus Italic
     .replace(/^[-*]\s+/gm, '• ')     // Ubah list dash/bintang jadi bullet bulat
     .replace(/#{1,6}\s?/g, '')       // Hapus heading #
+    .replace(/^(Berikut|Ini adalah|Ringkasan|Tentu).*\n/gmi, '') // Hapus kalimat pembuka nakal
     .trim();
+}
+
+/* ═══ TEXT FORMATTER (Menyusun Bullet Point Sejajar Rapi) ═══ */
+function FmtText(p) {
+  if(!p.text) return null;
+  var lines = p.text.split('\n').filter(function(x){return x.trim().length>0});
+  
+  return h`<div>
+    ${lines.map(function(l, i){
+      var str = l.trim();
+      // Deteksi apakah baris ini list bullet (•, -) atau list angka (1., 2.)
+      var isList = str.startsWith('•') || str.startsWith('-') || /^\d+\./.test(str);
+      
+      if(isList) {
+         // Ambil penanda list-nya
+         var marker = str.match(/^([•-]|\d+\.)/)[0];
+         var content = str.substring(marker.length).trim();
+         
+         return h`<div key=${i} style=${{display:"flex", gap:10, marginBottom:8, alignItems:"flex-start"}}>
+           <span style=${{color:p.color||"#BF5AF2", fontWeight:800, minWidth:16, textAlign:"right"}}>${marker.replace('-','•')}</span>
+           <span style=${{flex:1, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${content}</span>
+         </div>`;
+      } else {
+         // Teks paragraf biasa
+         return h`<div key=${i} style=${{marginBottom:10, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${str}</div>`;
+      }
+    })}
+  </div>`;
 }
 
 /* ═══ ICON ═══ */
@@ -131,12 +160,13 @@ function transcribeAudio(audioBlob, lang, key){
 
 function aiSummarizeChunk(text, lang, key){
   return new Promise(function(resolve, reject){
+    // PROMPT KETAT V10
     var prompt = lang==="id-ID"
-      ? "Buat ringkasan maksimal 2 poin dari transkrip rapat 30 detik ini. PENTING: Jangan gunakan format markdown (tanpa bintang, tanpa bold). Gunakan list biasa (bullet).\n\nTranskrip:\n" + text
-      : "Extract max 2 key bullet points. IMPORTANT: Plain text only, absolutely NO markdown asterisks.\n\nTranscript:\n" + text;
+      ? "Buat ringkasan maksimal 2 poin dari transkrip 30 detik ini.\n\nATURAN KETAT:\n1. HANYA hasilkan daftar poin (mulai dengan tanda •).\n2. DILARANG KERAS menulis kalimat pembuka/penutup.\n3. Jika transkrip tidak bermakna atau hanya kata acak, BALAS PERSIS SEPERTI INI: '• (Tidak ada diskusi spesifik)'.\n\nTranskrip:\n" + text
+      : "Extract max 2 key points.\n\nSTRICT RULES:\n1. ONLY output bullets (start with •).\n2. NO intro/outro sentences.\n3. If meaningless, output: '• (No specific discussion)'.\n\nTranscript:\n" + text;
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You output clean plain text only."},{role:"user",content:prompt}], temperature: 0.3, max_tokens: 300 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You output pure bullet points only. Never converse. Never use markdown formatting."},{role:"user",content:prompt}], temperature: 0.2, max_tokens: 300 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
@@ -145,11 +175,11 @@ function aiSummarizeChunk(text, lang, key){
 function aiSummarizeOverall(text, lang, key){
   return new Promise(function(resolve, reject){
     var prompt = lang==="id-ID"
-      ? "Buat Ringkasan Eksekutif komprehensif. Susun dengan rapi: Topik Utama, Keputusan, dan Tindak Lanjut. PENTING: Dilarang keras menggunakan format markdown (tanpa bintang/bold). Gunakan teks biasa dan kapitalisasi standar.\n\nTranskrip:\n" + text
-      : "Create an Executive Summary: Main Topics, Decisions, Action Items. IMPORTANT: Strictly NO markdown asterisks or formatting symbols.\n\nTranscript:\n" + text;
+      ? "Buat Ringkasan Eksekutif komprehensif. Susun dengan rapi: 1. Topik Utama, 2. Keputusan, 3. Tindak Lanjut.\n\nATURAN KETAT:\n1. Langsung ke isi poin, DILARANG menulis kalimat pengantar.\n2. Gunakan teks biasa (tanpa bintang markdown).\n\nTranskrip:\n" + text
+      : "Create an Executive Summary: 1. Main Topics, 2. Decisions, 3. Action Items.\n\nSTRICT RULES:\n1. NO intro text.\n2. NO markdown formatting.\n\nTranscript:\n" + text;
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are an executive secretary. You ONLY output clean plain text, no markdown syntax allowed."},{role:"user",content:prompt}], temperature: 0.4, max_tokens: 1500 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are a strict executive secretary. You ONLY output clean bulleted text without conversational fillers."},{role:"user",content:prompt}], temperature: 0.3, max_tokens: 1500 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
@@ -382,8 +412,7 @@ function RecTab(p){
         
         ${fin.length === 0 ? h`<div style=${{fontSize:13,color:"#8E8E93",fontStyle:"italic"}}>Mendengarkan percakapan...</div>` : null}
         
-        ${fin.map(function(f, index){
-          // Cari rangkuman yang waktunya sama dengan transkrip ini
+        ${fin.map(function(f){
           var n = notes.find(function(item){ return item.time === f.time });
           return h`<div key=${f.id} style=${{position:"relative", marginBottom:24, animation:"fadeIn 0.4s ease-out"}}>
             <div className="timeline-dot" style=${{background:"#BF5AF2"}}></div>
@@ -393,11 +422,11 @@ function RecTab(p){
             </div>
             
             <div className="card-note" style=${{padding:"16px", marginBottom:8}}>
-              ${n ? h`<div style=${{fontSize:14,lineHeight:1.6,color:"#1C1C1E",whiteSpace:"pre-wrap",fontWeight:500,marginBottom:12}}>${n.text}</div>` : 
+              ${n ? h`<${FmtText} text=${n.text} color="#BF5AF2"/>` : 
                     h`<div style=${{fontSize:13,color:"#BF5AF2",fontStyle:"italic",marginBottom:12,display:"flex",alignItems:"center",gap:6}}><div className="spinner" style=${{width:10,height:10,borderWidth:2}}></div> AI sedang merangkum...</div>`}
               
               <div style=${{paddingTop:12, borderTop:"1px solid rgba(0,0,0,0.05)"}}>
-                 <div style=${{fontSize:10,fontWeight:700,color:"#8E8E93",marginBottom:4,textTransform:"uppercase"}}>Transkrip Mentah</div>
+                 <div style=${{fontSize:10,fontWeight:700,color:"#8E8E93",marginBottom:6,textTransform:"uppercase"}}>Transkrip Mentah</div>
                  <div style=${{fontSize:13,lineHeight:1.6,color:"#636366"}}>${f.text}</div>
               </div>
             </div>
@@ -456,7 +485,7 @@ function HistTab(){
               <${Ic} name="sparkle" size=${16} color="#BF5AF2"/>Ringkasan Eksekutif
             </div>
             <div className="card-note exec-card" style=${{padding:"20px"}}>
-              <div style=${{fontSize:14,lineHeight:1.7,whiteSpace:"pre-wrap",color:"#1C1C1E",fontWeight:500,wordBreak:"break-word"}}>${item.overall}</div>
+              <${FmtText} text=${item.overall} color="#BF5AF2"/>
             </div>
           </div>` : null}
 
@@ -466,7 +495,7 @@ function HistTab(){
               <${Ic} name="clock" size=${16} color="#5856D6"/>Timeline
             </div>
             <div className="card-note" style=${{background:"rgba(0,0,0,0.02)",border:"none",boxShadow:"none",padding:"16px"}}>
-              <div style=${{fontSize:13,lineHeight:1.7,whiteSpace:"pre-wrap",color:"#48484A",wordBreak:"break-word"}}>${item.notes}</div>
+               <${FmtText} text=${item.notes} color="#5856D6"/>
             </div>
           </div>` : null}
 
@@ -493,10 +522,7 @@ function SetTab(p){
   return h`<div style=${{maxWidth:500, margin:"0 auto", padding:"32px 16px"}}>
     <h2 style=${{fontSize:26,fontWeight:800,marginBottom:24,letterSpacing:"-0.5px",textAlign:"center"}}>Sistem & Pengaturan</h2>
 
-    <!-- SATU KOTAK BESAR UNTUK SEMUA PENGATURAN -->
     <div className="gl" style=${{padding:24,marginBottom:16}}>
-      
-      <!-- Bagian 1: API KEY -->
       <div style=${{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
         <div style=${{width:36,height:36,borderRadius:12,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="key" size=${18}/></div>
         <span style=${{fontWeight:800,fontSize:17}}>API Key Integrasi</span>
@@ -509,10 +535,8 @@ function SetTab(p){
         </div>
       </div>
 
-      <!-- Garis Pemisah -->
       <div style=${{height:1, background:"rgba(0,0,0,0.06)", margin:"0 -24px 24px -24px"}}></div>
 
-      <!-- Bagian 2: PIPELINE AI -->
       <div style=${{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
         <div style=${{width:36,height:36,borderRadius:12,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#30B0C7"}}><${Ic} name="layers" size=${18}/></div>
         <span style=${{fontWeight:800,fontSize:17}}>Alur Pipeline AI (Smart Mode)</span>
@@ -549,7 +573,7 @@ function SetTab(p){
          </div>
       </div>
       <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",fontSize:11,color:"#C7C7CC",textAlign:"center",letterSpacing:"0.5px",fontWeight:600}}>
-        v9.0 · iOS 26 Design UI
+        v10.0 · Strict Formatter Build
       </div>
     </div>
   </div>`;
