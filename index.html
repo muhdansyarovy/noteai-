@@ -7,18 +7,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-:root{--bg:#F2F2F7;--tx:#1C1C1E;--txm:#8E8E93;--txs:#636366;--gl:rgba(255,255,255,0.65);--gb:rgba(255,255,255,0.8);--blue:#0A84FF;--red:#FF453A;--purple:#BF5AF2;--green:#32D74B;--orange:#FF9F0A;--cyan:#5AC8FA;--teal:#30B0C7;--indigo:#5856D6}
+:root{--bg:#F2F2F7;--tx:#1C1C1E;--txm:#8E8E93;--txs:#636366;--gl:rgba(255,255,255,0.65);--gb:rgba(255,255,255,0.8);--indigo:#5856D6;--red:#FF453A;--green:#32D74B;--orange:#FF9F0A;--teal:#30B0C7}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;min-height:100vh;min-height:100dvh;background:var(--bg);background-image:radial-gradient(at 20% 0%,rgba(88,86,214,0.07) 0,transparent 50%),radial-gradient(at 80% 10%,rgba(48,176,199,0.06) 0,transparent 50%);color:var(--tx);-webkit-font-smoothing:antialiased;padding-bottom:72px;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;min-height:100vh;background:var(--bg);background-image:radial-gradient(at 20% 0%,rgba(88,86,214,0.07) 0,transparent 50%),radial-gradient(at 80% 10%,rgba(48,176,199,0.06) 0,transparent 50%);color:var(--tx);-webkit-font-smoothing:antialiased;padding-bottom:72px;overflow-x:hidden}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(88,86,214,.12)}50%{transform:scale(1.03);box-shadow:0 0 0 18px rgba(88,86,214,0)}}
 @keyframes pulseRec{0%,100%{opacity:.7;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @keyframes typeIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
 .gl{background:var(--gl);-webkit-backdrop-filter:blur(48px) saturate(200%);backdrop-filter:blur(48px) saturate(200%);border:1px solid var(--gb);border-radius:22px;box-shadow:0 8px 32px rgba(0,0,0,.04),inset 0 1px 1px rgba(255,255,255,.8)}
-.gi{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.6);border-radius:14px}
 .pill{border-radius:100px}
 button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .12s;font-family:inherit;cursor:pointer}
 button:active{transform:scale(.96)}
@@ -28,14 +26,11 @@ button:active{transform:scale(.96)}
 .btab button:active{transform:none}
 .fi{font-family:inherit;font-size:14px;padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,0.08);background:rgba(0,0,0,0.02);outline:none;width:100%}
 .fi:focus{border-color:rgba(88,86,214,0.4)}
-.tline{animation:typeIn .3s ease both;padding:8px 12px;border-radius:12px;margin-bottom:4px;font-size:13px;line-height:1.5}
-.tline.final{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.6)}
-.tline.interim{background:rgba(88,86,214,.04);border:1px solid rgba(88,86,214,.08);color:var(--txs);font-style:italic}
-.sblock{animation:slideUp .4s ease both;padding:14px 16px;border-radius:16px;margin-bottom:8px;background:rgba(88,86,214,.04);border:1px solid rgba(88,86,214,.08)}
-.obtn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600;font-family:inherit;border:none;cursor:pointer;position:relative;z-index:1}
-.obtn:active{transform:scale(.96)}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:3px}
+.tl{animation:typeIn .3s ease both;padding:8px 12px;border-radius:12px;margin-bottom:4px;font-size:13px;line-height:1.5}
+.tl.f{background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.6)}
+.tl.i{background:rgba(88,86,214,.04);border:1px solid rgba(88,86,214,.08);color:var(--txs);font-style:italic}
+.sb{animation:slideUp .4s ease both;padding:14px 16px;border-radius:16px;margin-bottom:8px;background:rgba(88,86,214,.04);border:1px solid rgba(88,86,214,.08)}
+.ob{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600;font-family:inherit;border:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -44,666 +39,134 @@ button:active{transform:scale(.96)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/htm@3.1.1/dist/htm.js"></script>
 <script>
-var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect,ucb=React.useCallback;
+"use strict";
+var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
+var ST={_d:null,_l:function(){if(!this._d){try{this._d=JSON.parse(localStorage.getItem("not4")||"null")}catch(e){}if(!this._d)this._d={ss:[],st:{iv:2,ln:"id-ID",ak:"",ap:"groq"}};}return this._d;},_s:function(){try{localStorage.setItem("not4",JSON.stringify(this._d))}catch(e){}},gs:function(){return this._l().st;},ss:function(s){this._l();Object.assign(this._d.st,s);this._s();},gl:function(){return this._l().ss||[];},as:function(s){this._l();this._d.ss.unshift(s);if(this._d.ss.length>100)this._d.ss.length=100;this._s();},ds:function(id){this._l();this._d.ss=this._d.ss.filter(function(s){return s.id!==id;});this._s();}};
 
-/* ─── STORAGE ─── */
-var ST={
-_d:null,
-_l:function(){if(!this._d){try{this._d=JSON.parse(localStorage.getItem("notulen_v2")||"null")}catch(e){}if(!this._d)this._d={sessions:[],settings:{interval:2,lang:"id-ID",apiKey:"",apiProvider:"groq"}};}return this._d;},
-_s:function(){try{localStorage.setItem("notulen_v2",JSON.stringify(this._d))}catch(e){}},
-gs:function(){return this._l().settings;},
-ss:function(s){this._l();this._d.settings=Object.assign({},this._d.settings,s);this._s();},
-gl:function(){return this._l().sessions||[];},
-as:function(s){this._l();this._d.sessions.unshift(s);if(this._d.sessions.length>100)this._d.sessions=this._d.sessions.slice(0,100);this._s();},
-ds:function(id){this._l();this._d.sessions=this._d.sessions.filter(function(s){return s.id!==id;});this._s();}
-};
+function Ic(p){var s=p.size||20,c=p.color||"currentColor",W={mic:"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8",stop:"M6 4h4v16H6zM14 4h4v16h-4z",file:"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",settings:"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2",check:"M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3",trash:"M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6",copy:"M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",key:"M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4",bot:"M12 8V4M8 4h8M2 14h2M20 14h2M15 13v2M9 13v2M4 8h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z",list:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",play:"M5 3l14 9-14 9V3z",globe:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",search:"M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35",zap:"M13 2L3 14h9l-1 8 10-12h-9l1-8z",alert:"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01",text:"M4 7V4h16v3M9 20h6M12 4v16",eye:"M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",pause:"M6 4h4v16H6zM14 4h4v16h-4z",chevR:"M9 18l6-6-6-6",vol:"M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"};return h`<svg width=${s} height=${s} viewBox="0 0 24 24" fill="none" stroke=${c} strokeWidth=${p.sw||2} strokeLinecap="round" strokeLinejoin="round"><path d=${W[p.name]||"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"}/></svg>`;}
 
-/* ─── ICON ─── */
-function Ic(p){var s=p.size||20,c=p.color||"currentColor";
-var paths={
-mic:"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8",
-stop:"M6 4h4v16H6zM14 4h4v16h-4z",
-file:"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",
-settings:"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
-clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2",
-check:"M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3",
-trash:"M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6",
-copy:"M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",
-key:"M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4",
-bot:"M12 8V4M8 4h8M2 14h2M20 14h2M15 13v2M9 13v2M4 8h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z",
-list:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
-play:"M5 3l14 9-14 9V3z",
-globe:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
-download:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
-search:"M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35",
-user:"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8z",
-zap:"M13 2L3 14h9l-1 8 10-12h-9l1-8z",
-alert:"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01",
-hash:"M4 9h16M4 15h16M10 3v18M14 3v18",
-text:"M4 7V4h16v3M9 20h6M12 4v16",
-eye:"M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
-pause:"M6 4h4v16H6zM14 4h4v16h-4z",
-chevRight:"M9 18l6-6-6-6",
-x:"M18 6L6 18M6 6l12 12",
-share:"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"
-};
-return h`<svg width=${s} height=${s} viewBox="0 0 24 24" fill="none" stroke=${c} strokeWidth=${p.sw||2} strokeLinecap="round" strokeLinejoin="round"><path d=${paths[p.name]||"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"}/></svg>`;}
+function aiCall(pr,sp){return new Promise(function(res){var s=ST.gs(),k=s.ak;if(!k){res("[Atur API Key di tab Pengaturan]");return;}var pv=s.ap||"groq",url,hd,bd;if(pv==="groq"){url="https://api.groq.com/openai/v1/chat/completions";hd={"Content-Type":"application/json","Authorization":"Bearer "+k};bd=JSON.stringify({model:"llama-3.3-70b-versatile",messages:[{role:"system",content:sp||"Anda asisten notulen rapat. Bahasa Indonesia. Ringkas padat. JANGAN markdown."},{role:"user",content:pr}],temperature:0.3,max_tokens:800});}else{url="https://api.anthropic.com/v1/messages";hd={"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"};bd=JSON.stringify({model:"claude-sonnet-4-20250514",system:sp||"Anda asisten notulen rapat. Bahasa Indonesia. Ringkas padat. JANGAN markdown.",messages:[{role:"user",content:pr}],max_tokens:800});}fetch(url,{method:"POST",headers:hd,body:bd}).then(function(r){return r.json()}).then(function(d){if(pv==="groq"){if(d.error)throw new Error(d.error.message);res(d.choices[0].message.content)}else{if(d.error)throw new Error(d.error.message);res(d.content[0].text)}}).catch(function(e){res("Error: "+e.message)})});}
 
-/* ─── AI CALL ─── */
-function aiCall(prompt,sysPrompt){
-return new Promise(function(res){
-var settings=ST.gs();var key=settings.apiKey;
-if(!key){res("[Atur API Key di tab Pengaturan]");return;}
-var provider=settings.apiProvider||"groq";var url,model,headers,body;
-if(provider==="groq"){
-url="https://api.groq.com/openai/v1/chat/completions";model="llama-3.3-70b-versatile";
-headers={"Content-Type":"application/json","Authorization":"Bearer "+key};
-body=JSON.stringify({model:model,messages:[{role:"system",content:sysPrompt||"Anda asisten notulen rapat. Bahasa Indonesia. Ringkas, padat. JANGAN markdown."},{role:"user",content:prompt}],temperature:0.3,max_tokens:800});
-}else{
-url="https://api.anthropic.com/v1/messages";model="claude-sonnet-4-20250514";
-headers={"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"};
-body=JSON.stringify({model:model,system:sysPrompt||"Anda asisten notulen rapat. Bahasa Indonesia. Ringkas, padat. JANGAN markdown.",messages:[{role:"user",content:prompt}],max_tokens:800});
-}
-fetch(url,{method:"POST",headers:headers,body:body}).then(function(r){return r.json();}).then(function(d){
-if(provider==="groq"){if(d.error)throw new Error(d.error.message);res(d.choices[0].message.content);}
-else{if(d.error)throw new Error(d.error.message);res(d.content[0].text);}
-}).catch(function(e){res("Error: "+e.message);});
-});
-}
+function LevelMeter(p){var cv=ur(null),rf=ur(null);ue(function(){if(!p.an||!cv.current)return;var c=cv.current,x=c.getContext("2d"),da=new Uint8Array(p.an.frequencyBinCount);function draw(){rf.current=requestAnimationFrame(draw);p.an.getByteFrequencyData(da);var dp=devicePixelRatio||1,rc=c.getBoundingClientRect();c.width=rc.width*dp;c.height=rc.height*dp;x.scale(dp,dp);var W=rc.width,H=rc.height;x.clearRect(0,0,W,H);var sm=0;for(var i=0;i<da.length;i++)sm+=da[i];var av=sm/da.length/255,bs=32,gp=3,bw=(W-(bs-1)*gp)/bs;for(var i=0;i<bs;i++){var th=(i+1)/bs,on=av>=th*0.7,bh=H*0.8,yy=(H-bh)/2,xx=i*(bw+gp);if(on){var it=Math.min(1,(av-th*0.5)*3);x.fillStyle=i/bs>0.7?"rgba(255,69,58,"+(0.5+it*0.5)+")":i/bs>0.4?"rgba(255,159,10,"+(0.4+it*0.6)+")":"rgba(88,86,214,"+(0.3+it*0.7)+")";}else{x.fillStyle="rgba(0,0,0,0.05)"}x.fillRect(xx,yy,bw,bh);}}draw();return function(){cancelAnimationFrame(rf.current)};},[p.an]);return h`<canvas ref=${cv} style=${{width:"100%",height:40,borderRadius:12,background:"rgba(255,255,255,0.4)",display:"block"}}/>`;}
 
-/* ─── AMPLITUDE BARS ─── */
-function AmpBars(p){
-var cvs=ur(null),raf=ur(null);
-ue(function(){
-if(!p.active||!p.analyser||!cvs.current)return;
-var c=cvs.current,x=c.getContext("2d");
-var fData=new Uint8Array(p.analyser.frequencyBinCount);
-function draw(){raf.current=requestAnimationFrame(draw);
-p.analyser.getByteFrequencyData(fData);
-var dp=devicePixelRatio||1,rc=c.getBoundingClientRect();
-c.width=rc.width*dp;c.height=rc.height*dp;x.scale(dp,dp);
-var W=rc.width,H=rc.height,bars=40,gap=2,bw=(W-(bars-1)*gap)/bars;
-x.clearRect(0,0,W,H);
-for(var i=0;i<bars;i++){var idx=Math.floor(i*(fData.length/bars));var val=fData[idx]/255;
-var bh=Math.max(2,val*H*0.9);var xx=i*(bw+gap);
-x.fillStyle="rgba(88,"+(86+Math.round(val*60))+",214,"+(0.3+val*0.7)+")";
-x.beginPath();x.roundRect(xx,H-bh,bw,bh,bw/2);x.fill();}
-}draw();
-return function(){cancelAnimationFrame(raf.current);};
-},[p.active,p.analyser]);
-return h`<canvas ref=${cvs} style=${{width:"100%",height:p.h||50,borderRadius:12,background:"rgba(255,255,255,0.4)",display:"block"}}/>`;
-}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function fT(ts){return new Date(ts).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
 
-/* ─── HELPERS ─── */
-function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
-function fmtTs(ts){return new Date(ts).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
-
-/* ════════════════════════════════════════════
-   MAIN APP — all recording state lives here
-   so switching tabs won't destroy it
-   ════════════════════════════════════════════ */
 function App(){
-var _tab=us("rec"),tab=_tab[0],sTab=_tab[1];
+var _t=us("rec"),tab=_t[0],sT=_t[1];
+var _p=us("idle"),ph=_p[0],sP=_p[1];
+var _e=us(0),el=_e[0],sE=_e[1];
+var _tr=us([]),tr=_tr[0],sTr=_tr[1];
+var _im=us(""),im=_im[0],sIm=_im[1];
+var _su=us([]),su=_su[0],sSu=_su[1];
+var _sl=us(false),sl=_sl[0],sSl=_sl[1];
+var _ti=us(""),ti=_ti[0],sTi=_ti[1];
+var _an=us(null),an=_an[0],sAn=_an[1];
+var _pa=us(false),pa=_pa[0],sPa=_pa[1];
+var _ss=us(""),ss=_ss[0],sSs=_ss[1];
+var _em=us(""),em=_em[0],sEm=_em[1];
+var _fc=us(0),fc=_fc[0],sfc=_fc[1];
+var tmR=ur(null),smR=ur(null),acR=ur(null),msR=ur(null),trR=ur([]),lsR=ur(0),phR=ur("idle"),paR=ur(false),scR=ur(null),srR=ur(null),saR=ur(false),rtR=ur(null),suR=ur([]);
+ue(function(){trR.current=tr},[tr]);ue(function(){phR.current=ph},[ph]);ue(function(){paR.current=pa},[pa]);ue(function(){suR.current=su},[su]);
+ue(function(){return function(){clearInterval(tmR.current);clearInterval(smR.current);clearTimeout(rtR.current);kSR();if(msR.current)msR.current.getTracks().forEach(function(t){t.stop()});if(acR.current&&acR.current.state!=="closed")acR.current.close()}},[]);
+ue(function(){if(scR.current)scR.current.scrollTop=scR.current.scrollHeight},[tr,im]);
 
-/* ─── RECORDING STATE (lifted to App) ─── */
-var _ph=us("idle"),ph=_ph[0],sPh=_ph[1];
-var _el=us(0),el=_el[0],sEl=_el[1];
-var _trans=us([]),trans=_trans[0],sTrans=_trans[1];
-var _interim=us(""),interim=_interim[0],sInterim=_interim[1];
-var _sums=us([]),sums=_sums[0],sSums=_sums[1];
-var _sumLd=us(false),sumLd=_sumLd[0],sSumLd=_sumLd[1];
-var _title=us(""),title=_title[0],sTitle=_title[1];
-var _analyser=us(null),analyser=_analyser[0],sAnalyser=_analyser[1];
-var _paused=us(false),paused=_paused[0],sPaused=_paused[1];
+function kSR(){saR.current=false;clearTimeout(rtR.current);if(srR.current){try{srR.current.onend=null;srR.current.onerror=null;srR.current.onresult=null;srR.current.onstart=null;srR.current.onspeechstart=null;srR.current.onspeechend=null;srR.current.abort()}catch(e){}srR.current=null}}
 
-// Refs for stable access in callbacks
-var recogRef=ur(null);
-var timerRef=ur(null);
-var sumTimerRef=ur(null);
-var acRef=ur(null);
-var msRef=ur(null);
-var transRef=ur([]);
-var lastSumIdxRef=ur(0);
-var phRef=ur("idle");
-var pausedRef=ur(false);
-var scrollRef=ur(null);
-var restartingRef=ur(false);
+function bSR(){kSR();var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){sEm("Browser tidak support. Pakai Chrome/Edge.");sSs("x");return}var ln=ST.gs().ln||"id-ID",r=new SR();r.continuous=true;r.interimResults=true;r.lang=ln;r.maxAlternatives=1;
+r.onstart=function(){saR.current=true;sSs("on")};
+r.onspeechstart=function(){sSs("sp")};
+r.onspeechend=function(){sSs("on")};
+r.onresult=function(e){if(paR.current)return;var fn="",tp="";for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)fn+=t;else tp+=t}if(fn.trim()){sTr(function(p){return p.concat([{id:Date.now()+"_"+Math.random().toString(36).substr(2,4),text:fn.trim(),ts:Date.now()}])});sIm("")}else if(tp){sIm(tp)}};
+r.onerror=function(e){saR.current=false;if(e.error==="not-allowed"){sEm("Izin mikrofon ditolak. Refresh halaman.");sSs("no");return}if(e.error==="network"){sEm("Speech Recognition butuh internet (Chrome kirim audio ke Google). Pastikan online.");sSs("net")}if(e.error==="no-speech")sSs("sil")};
+r.onend=function(){saR.current=false;if(phR.current==="recording"&&!paR.current){sSs("re");clearTimeout(rtR.current);rtR.current=setTimeout(function(){if(phR.current==="recording"&&!paR.current)bSR()},400)}};
+srR.current=r;sSs("st");try{r.start()}catch(ex){setTimeout(function(){if(phR.current==="recording"&&!paR.current)bSR()},800)}}
 
-// Keep refs in sync
-ue(function(){transRef.current=trans;},[trans]);
-ue(function(){phRef.current=ph;},[ph]);
-ue(function(){pausedRef.current=paused;},[paused]);
+function doS(){var al=trR.current,fr=lsR.current,nw=al.slice(fr);if(nw.length<2)return;sSl(true);var bk=nw.map(function(t,i){return(fr+i+1)+". "+t.text}).join("\n"),fl=al.map(function(t){return t.text}).join("\n");aiCall("Transkrip rapat (baris "+(fr+1)+" s/d "+al.length+"):\n\n"+bk+"\n\nKonteks:\n"+fl.substring(0,2000)+"\n\nRingkasan poin penting bernomor, singkat. Identifikasi keputusan, action item, topik utama.","Anda asisten notulen profesional. Bahasa Indonesia. JANGAN markdown bold/italic.").then(function(txt){sSl(false);sSu(function(p){return p.concat([{id:Date.now(),ts:Date.now(),fl:fr+1,tl:al.length,text:txt}])});lsR.current=al.length})}
 
-// Cleanup on unmount
-ue(function(){return function(){
-clearInterval(timerRef.current);clearInterval(sumTimerRef.current);
-if(recogRef.current){try{recogRef.current.abort();}catch(e){}}
-if(msRef.current)msRef.current.getTracks().forEach(function(t){t.stop();});
-if(acRef.current&&acRef.current.state!=="closed")acRef.current.close();
-};},[]);
+function stR(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert("Browser tidak support Speech Recognition.\nGunakan Chrome atau Edge.");return}sEm("");sTr([]);sSu([]);sE(0);sIm("");lsR.current=0;sPa(false);sSs("");navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(st){msR.current=st;var ac=new(window.AudioContext||window.webkitAudioContext)();acR.current=ac;var src=ac.createMediaStreamSource(st),na=ac.createAnalyser();na.fftSize=2048;na.smoothingTimeConstant=0.8;src.connect(na);sAn(na);sP("recording");bSR();tmR.current=setInterval(function(){sE(function(e){return e+1})},1000);var ms=(ST.gs().iv||2)*60*1000;smR.current=setInterval(function(){if(!paR.current&&phR.current==="recording")doS()},ms)}).catch(function(e){sEm("Gagal akses mikrofon: "+e.message);alert("Gagal akses mikrofon: "+e.message)})}
 
-// Auto-scroll
-ue(function(){
-if(scrollRef.current)scrollRef.current.scrollTop=scrollRef.current.scrollHeight;
-},[trans,interim]);
+function tgP(){var nx=!paR.current;sPa(nx);if(nx){kSR();sSs("pa")}else bSR()}
 
-var settings=ST.gs();
+function spR(){clearInterval(tmR.current);clearInterval(smR.current);sP("done");kSR();sSs("");if(msR.current){msR.current.getTracks().forEach(function(t){t.stop()});msR.current=null}if(acR.current&&acR.current.state!=="closed")acR.current.close();sAn(null);sIm("");if(trR.current.length>lsR.current&&trR.current.length>=2)doS();var ttl=ti||("Rapat "+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}));ST.as({id:Date.now()+"",title:ttl,ts:Date.now(),dur:el,tr:trR.current,su:suR.current.concat([]),ln:ST.gs().ln})}
 
-function doSummarize(){
-var allTrans=transRef.current;
-var fromIdx=lastSumIdxRef.current;
-var newLines=allTrans.slice(fromIdx);
-if(newLines.length<2)return;
-sSumLd(true);
-var textBlock=newLines.map(function(t,i){return(fromIdx+i+1)+". "+t.text;}).join("\n");
-var totalText=allTrans.map(function(t){return t.text;}).join("\n");
-aiCall(
-"Transkrip rapat terbaru (baris "+(fromIdx+1)+" s/d "+allTrans.length+"):\n\n"+textBlock+
-"\n\nKonteks keseluruhan:\n"+totalText.substring(0,2000)+
-"\n\nBuat ringkasan poin-poin penting. Tulis poin bernomor. Setiap poin singkat (1-2 kalimat). Identifikasi: keputusan, tugas/action item, topik diskusi utama.",
-"Anda asisten notulen rapat profesional. Bahasa Indonesia. Ringkas terstruktur. JANGAN markdown bold/italic."
-).then(function(summary){
-sSumLd(false);
-sSums(function(prev){return prev.concat([{
-id:Date.now(),ts:Date.now(),fromLine:fromIdx+1,toLine:allTrans.length,text:summary
-}]);});
-lastSumIdxRef.current=allTrans.length;
-});
-}
+function rsR(){sP("idle");sTr([]);sSu([]);sE(0);sIm("");sTi("");sEm("");sSs("");lsR.current=0}
 
-function createRecognition(){
-var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SR)return null;
-var recog=new SR();
-recog.continuous=true;
-recog.interimResults=true;
-recog.lang=settings.lang||"id-ID";
-recog.maxAlternatives=1;
+function cpA(){var tx="NOTULEN RAPAT\n"+(ti||"Rapat")+"\n"+new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\nDurasi: "+fmt(el)+"\n\n=== RINGKASAN ===\n\n"+su.map(function(s,i){return"[Bagian "+(i+1)+"]\n"+s.text}).join("\n\n")+"\n\n=== TRANSKRIP ===\n\n"+tr.map(function(t){return"["+fT(t.ts)+"] "+t.text}).join("\n");navigator.clipboard.writeText(tx).then(function(){alert("Tersalin!")})}
 
-recog.onresult=function(e){
-if(pausedRef.current)return;
-var finalText="",interimText="";
-for(var i=e.resultIndex;i<e.results.length;i++){
-var t=e.results[i][0].transcript;
-if(e.results[i].isFinal)finalText+=t;
-else interimText+=t;
-}
-if(finalText.trim()){
-sTrans(function(prev){return prev.concat([{id:Date.now()+Math.random(),text:finalText.trim(),ts:Date.now()}]);});
-sInterim("");
-}else{sInterim(interimText);}
-};
+function srB(){var mp={"st":["#FF9F0A","Memulai..."],"on":["#5856D6","Mendengarkan"],"sp":["#32D74B","Suara terdeteksi"],"sil":["#FF9F0A","Tidak ada suara"],"re":["#FF9F0A","Restart..."],"pa":["#8E8E93","Dijeda"],"no":["#FF453A","Izin ditolak"],"net":["#FF453A","Error jaringan"],"x":["#FF453A","Tidak didukung"]};var nf=mp[ss];if(!nf)return null;return h`<div className="pill" style=${{display:"inline-flex",alignItems:"center",gap:4,background:nf[0]+"12",border:"1px solid "+nf[0]+"25",padding:"2px 10px",marginTop:6}}><div style=${{width:5,height:5,borderRadius:3,background:nf[0],animation:ss==="on"||ss==="sp"?"pulseRec 1.2s infinite":"none"}}/><span style=${{fontSize:9,fontWeight:700,color:nf[0]}}>${nf[1]}</span></div>`}
 
-recog.onerror=function(e){
-console.log("SR error:",e.error);
-if(e.error==="not-allowed"){alert("Izin mikrofon ditolak.");stopRecording();return;}
-// For other errors, let onend handle restart
-};
+var sg=ST.gs();
 
-recog.onend=function(){
-// Auto-restart if still recording and not paused
-if(phRef.current==="recording"&&!pausedRef.current&&!restartingRef.current){
-restartingRef.current=true;
-setTimeout(function(){
-restartingRef.current=false;
-if(phRef.current==="recording"&&!pausedRef.current&&recogRef.current){
-try{recogRef.current.start();}catch(ex){
-// If the old one is dead, create a new one
-var newRecog=createRecognition();
-if(newRecog){recogRef.current=newRecog;try{newRecog.start();}catch(ex2){}}
-}
-}
-},300);
-}
-};
-
-return recog;
-}
-
-function startRecording(){
-if(!("webkitSpeechRecognition" in window)&&!("SpeechRecognition" in window)){
-alert("Browser tidak mendukung Speech Recognition.\nGunakan Chrome atau Edge.");return;
-}
-sTrans([]);sSums([]);sEl(0);sInterim("");
-lastSumIdxRef.current=0;sPaused(false);
-
-navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(stream){
-msRef.current=stream;
-var ac=new(window.AudioContext||window.webkitAudioContext)();
-acRef.current=ac;
-var src=ac.createMediaStreamSource(stream);
-var an=ac.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0.8;
-src.connect(an);sAnalyser(an);
-
-var recog=createRecognition();
-if(!recog){alert("SpeechRecognition tidak tersedia.");return;}
-recogRef.current=recog;
-
-try{recog.start();}catch(ex){console.log("Start error",ex);}
-
-sPh("recording");
-timerRef.current=setInterval(function(){sEl(function(e){return e+1;});},1000);
-
-var intervalMs=(settings.interval||2)*60*1000;
-sumTimerRef.current=setInterval(function(){
-if(!pausedRef.current&&phRef.current==="recording")doSummarize();
-},intervalMs);
-
-}).catch(function(e){alert("Gagal akses mikrofon: "+e.message);});
-}
-
-function togglePause(){
-var next=!pausedRef.current;
-sPaused(next);
-if(next){
-try{if(recogRef.current)recogRef.current.stop();}catch(e){}
-}else{
-// Resume: create fresh recognition
-var recog=createRecognition();
-if(recog){recogRef.current=recog;try{recog.start();}catch(e){}}
-}
-}
-
-function stopRecording(){
-clearInterval(timerRef.current);clearInterval(sumTimerRef.current);
-sPh("done");
-if(recogRef.current){try{recogRef.current.abort();}catch(e){}}
-recogRef.current=null;
-if(msRef.current){msRef.current.getTracks().forEach(function(t){t.stop();});msRef.current=null;}
-if(acRef.current&&acRef.current.state!=="closed"){acRef.current.close();}
-sAnalyser(null);sInterim("");
-
-// Final summarize if there's unsummarized content
-var allT=transRef.current;
-if(allT.length>lastSumIdxRef.current&&allT.length>=2){
-doSummarize();
-}
-
-// Save session
-var sessionTitle=title||("Rapat "+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}));
-ST.as({id:Date.now()+"",title:sessionTitle,ts:Date.now(),duration:el,transcript:transRef.current,summaries:sums.concat([]),lang:settings.lang});
-}
-
-function resetRec(){
-sPh("idle");sTrans([]);sSums([]);sEl(0);sInterim("");sTitle("");
-lastSumIdxRef.current=0;
-}
-
-function copyAll(){
-var text="NOTULEN RAPAT\n"+(title||"Rapat")+"\n"+
-new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\n"+
-"Durasi: "+fmt(el)+"\n\n"+
-"=== RINGKASAN ===\n\n"+
-sums.map(function(s,i){return"[Bagian "+(i+1)+"]\n"+s.text;}).join("\n\n")+
-"\n\n=== TRANSKRIP LENGKAP ===\n\n"+
-trans.map(function(t){return"["+fmtTs(t.ts)+"] "+t.text;}).join("\n");
-navigator.clipboard.writeText(text).then(function(){alert("Tersalin ke clipboard!");});
-}
-
-/* ════════════════════════
-   TAB: REKAM
-   ════════════════════════ */
-function renderRec(){
+/* RENDER TABS */
 return h`<div>
+<div style=${{display:tab==="rec"?"block":"none"}}>
 <div style=${{textAlign:"center",padding:"40px 16px 8px"}}>
-<div className="pill" style=${{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(88,86,214,0.1)",border:"1px solid rgba(88,86,214,0.12)",padding:"3px 10px",marginBottom:10}}>
-<span style=${{fontSize:9,fontWeight:700,color:"#5856D6"}}>NOTULEN AI</span>
-</div>
-<h1 style=${{fontWeight:800,fontSize:26,letterSpacing:"-0.8px",lineHeight:1.1}}>Smart Meeting Notes</h1>
-<p style=${{fontSize:12,color:"#8E8E93",marginTop:5}}>Transkrip otomatis + Ringkasan AI</p>
-</div>
-
+<div className="pill" style=${{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(88,86,214,0.1)",border:"1px solid rgba(88,86,214,0.12)",padding:"3px 10px",marginBottom:10}}><span style=${{fontSize:9,fontWeight:700,color:"#5856D6"}}>NOTULEN AI</span></div>
+<h1 style=${{fontWeight:800,fontSize:26,letterSpacing:"-0.8px"}}>Smart Meeting Notes</h1>
+<p style=${{fontSize:12,color:"#8E8E93",marginTop:5}}>Transkrip otomatis + Ringkasan AI</p></div>
 <div style=${{maxWidth:480,margin:"0 auto",padding:"0 16px 16px"}}>
 
-${ph==="idle"&&h`<div>
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Judul Rapat (opsional)</div>
-<input class="fi" value=${title} onInput=${function(e){sTitle(e.target.value);}} placeholder="Cth: Weekly Standup 27 Mar"/>
-</div>
+${ph==="idle"?h`<div>
+<div className="gl" style=${{padding:16,marginBottom:12}}><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Judul Rapat (opsional)</div><input class="fi" value=${ti} onInput=${function(e){sTi(e.target.value)}} placeholder="Cth: Weekly Standup"/></div>
+<div className="gl" style=${{padding:16,marginBottom:12}}><div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><div style=${{width:28,height:28,borderRadius:8,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="settings" size=${15}/></div><span style=${{fontWeight:600,fontSize:13}}>Pengaturan Cepat</span></div>
+<div style=${{display:"flex",gap:8}}><div style=${{flex:1}}><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Bahasa</div><div style=${{display:"flex",gap:4}}>${[["id-ID","ID"],["en-US","EN"]].map(function(l){var on=sg.ln===l[0];return h`<button key=${l[0]} onClick=${function(){ST.ss({ln:l[0]});sfc(fc+1)}} style=${{flex:1,padding:"8px",borderRadius:8,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.08)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${l[1]}</button>`})}</div></div>
+<div style=${{flex:1}}><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Interval AI</div><div style=${{display:"flex",gap:4}}>${[[1,"1m"],[2,"2m"],[5,"5m"]].map(function(v){var on=sg.iv===v[0];return h`<button key=${v[0]} onClick=${function(){ST.ss({iv:v[0]});sfc(fc+1)}} style=${{flex:1,padding:"8px",borderRadius:8,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.08)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${v[1]}</button>`})}</div></div></div></div>
+<div style=${{textAlign:"center",marginTop:12}}><button onClick=${stR} style=${{width:90,height:90,borderRadius:45,border:"none",background:"linear-gradient(135deg,#5856D6,#7B79E8)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 32px rgba(88,86,214,0.25)",margin:"0 auto"}}><${Ic} name="mic" size=${28} color="#FFF"/></button><div style=${{fontSize:12,fontWeight:600,color:"#5856D6",marginTop:8}}>Mulai Rekam</div></div>
+${!sg.ak?h`<div className="gl" style=${{padding:14,marginTop:16,background:"rgba(255,159,10,0.05)",border:"1px solid rgba(255,159,10,0.12)"}}><div style=${{display:"flex",alignItems:"center",gap:8}}><${Ic} name="alert" size=${16} color="#FF9F0A"/><div><div style=${{fontSize:12,fontWeight:600,color:"#FF9F0A"}}>API Key belum diatur</div><div style=${{fontSize:11,color:"#8E8E93",marginTop:1}}>Tab Pengaturan → masukkan API Key.</div></div></div></div>`:null}
+<div style=${{marginTop:12,padding:12,borderRadius:14,background:"rgba(0,0,0,0.02)",border:"1px solid rgba(0,0,0,0.04)"}}><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Persyaratan</div><div style=${{fontSize:11,color:"#636366",lineHeight:1.6}}>• Chrome atau Edge (desktop/mobile)
+• Koneksi internet (SR via Google)
+• Izinkan akses mikrofon</div></div></div>`:null}
 
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-<div style=${{width:28,height:28,borderRadius:8,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="settings" size=${15}/></div>
-<span style=${{fontWeight:600,fontSize:13}}>Pengaturan Cepat</span>
-</div>
-<div style=${{display:"flex",gap:8,marginBottom:0}}>
-<div style=${{flex:1}}>
-<div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Bahasa</div>
-<div style=${{display:"flex",gap:4}}>
-${[["id-ID","ID"],["en-US","EN"]].map(function(l){
-var on=settings.lang===l[0];
-return h`<button key=${l[0]} onClick=${function(e){e.preventDefault();e.stopPropagation();ST.ss({lang:l[0]});}} style=${{flex:1,padding:"8px",borderRadius:8,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.08)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${l[1]}</button>`;
-})}
-</div>
-</div>
-<div style=${{flex:1}}>
-<div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Interval AI</div>
-<div style=${{display:"flex",gap:4}}>
-${[[1,"1m"],[2,"2m"],[5,"5m"]].map(function(v){
-var on=settings.interval===v[0];
-return h`<button key=${v[0]} onClick=${function(e){e.preventDefault();e.stopPropagation();ST.ss({interval:v[0]});}} style=${{flex:1,padding:"8px",borderRadius:8,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.08)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${v[1]}</button>`;
-})}
-</div>
-</div>
-</div>
-</div>
+${ph==="recording"?h`<div>
+<div style=${{textAlign:"center",marginBottom:6}}><div className="gl" style=${{display:"inline-flex",alignItems:"center",gap:10,padding:"10px 20px",position:"relative"}}>${!pa?h`<div style=${{position:"absolute",inset:-4,borderRadius:28,border:"2px solid rgba(88,86,214,0.15)",animation:"breathe 2s infinite"}}/>`:null}<div style=${{width:8,height:8,borderRadius:4,background:pa?"#FF9F0A":"#FF453A",animation:pa?"none":"pulseRec 1.2s infinite"}}/><span style=${{fontSize:18,fontWeight:700,fontVariantNumeric:"tabular-nums",color:pa?"#FF9F0A":"#5856D6"}}>${fmt(el)}</span><div style=${{width:1,height:16,background:"rgba(0,0,0,0.08)"}}/><span style=${{fontSize:11,color:"#8E8E93"}}>${tr.length} kalimat</span></div>${srB()}</div>
+${an?h`<div style=${{marginBottom:8}}><${LevelMeter} an=${an}/></div>`:null}
+${em?h`<div className="gl" style=${{padding:12,marginBottom:10,background:"rgba(255,69,58,0.05)",border:"1px solid rgba(255,69,58,0.12)"}}><div style=${{display:"flex",alignItems:"flex-start",gap:8}}><${Ic} name="alert" size=${14} color="#FF453A"/><div style=${{fontSize:12,color:"#FF453A",lineHeight:1.4,flex:1}}>${em}</div></div></div>`:null}
+<div style=${{display:"flex",gap:6,marginBottom:10}}><button onClick=${tgP} style=${{flex:1,padding:"12px",borderRadius:14,border:"none",background:pa?"rgba(50,215,75,0.1)":"rgba(255,159,10,0.1)",color:pa?"#32D74B":"#FF9F0A",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name=${pa?"play":"pause"} size=${16} color=${pa?"#32D74B":"#FF9F0A"}/>${pa?"Lanjut":"Jeda"}</button>
+<button onClick=${spR} style=${{flex:1,padding:"12px",borderRadius:14,border:"none",background:"#FF453A",color:"#FFF",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name="stop" size=${16} color="#FFF"/>Selesai</button></div>
+<button onClick=${doS} disabled=${sl||tr.length<2} style=${{width:"100%",padding:"10px",borderRadius:12,border:"1px solid rgba(88,86,214,0.15)",background:"rgba(88,86,214,0.06)",color:sl?"#8E8E93":"#5856D6",fontSize:12,fontWeight:600,marginBottom:12,display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:sl||tr.length<2?0.5:1}}><${Ic} name="zap" size=${14} color=${sl?"#8E8E93":"#5856D6"}/>${sl?"Meringkas...":"Ringkas Sekarang"}</button></div>`:null}
 
-<div style=${{textAlign:"center",marginTop:12}}>
-<button onClick=${function(e){e.preventDefault();startRecording();}} style=${{width:90,height:90,borderRadius:45,border:"none",background:"linear-gradient(135deg,#5856D6,#7B79E8)",color:"#FFF",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,boxShadow:"0 8px 32px rgba(88,86,214,0.25)",margin:"0 auto"}}>
-<${Ic} name="mic" size=${28} color="#FFF"/>
-</button>
-<div style=${{fontSize:12,fontWeight:600,color:"#5856D6",marginTop:8}}>Mulai Rekam</div>
-</div>
+${(ph==="recording"||ph==="done")&&su.length>0?h`<div style=${{marginBottom:12}}><div style=${{fontSize:11,fontWeight:700,color:"#5856D6",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:6,display:"flex",alignItems:"center",gap:4}}><${Ic} name="list" size=${13} color="#5856D6"/>Ringkasan AI</div>${su.map(function(s,i){return h`<div key=${s.id} class="sb"><div style=${{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style=${{fontSize:10,fontWeight:600,color:"#5856D6"}}>Bagian ${i+1}</span><span style=${{fontSize:9,color:"#8E8E93"}}>${fT(s.ts)}</span></div><p style=${{fontSize:13,lineHeight:1.6,margin:0,whiteSpace:"pre-wrap"}}>${s.text}</p></div>`})}${sl?h`<div class="sb" style=${{display:"flex",alignItems:"center",gap:8}}><div style=${{width:5,height:5,borderRadius:3,background:"#5856D6",animation:"blink 1s infinite"}}/><span style=${{fontSize:12,color:"#8E8E93"}}>Meringkas...</span></div>`:null}</div>`:null}
 
-${!settings.apiKey&&h`<div className="gl" style=${{padding:14,marginTop:16,background:"rgba(255,159,10,0.05)",border:"1px solid rgba(255,159,10,0.12)"}}>
-<div style=${{display:"flex",alignItems:"center",gap:8}}>
-<${Ic} name="alert" size=${16} color="#FF9F0A"/>
-<div><div style=${{fontSize:12,fontWeight:600,color:"#FF9F0A"}}>API Key belum diatur</div>
-<div style=${{fontSize:11,color:"#8E8E93",marginTop:1}}>Buka tab Pengaturan untuk memasukkan API Key.</div></div>
-</div></div>`}
-</div>`}
+${ph==="recording"||ph==="done"?h`<div style=${{marginBottom:8}}><div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><span style=${{fontSize:11,fontWeight:700,color:"#8E8E93",textTransform:"uppercase",letterSpacing:"0.5px",display:"flex",alignItems:"center",gap:4}}><${Ic} name="text" size=${13} color="#8E8E93"/>Transkrip</span>${ph==="done"&&tr.length>0?h`<button onClick=${cpA} class="ob" style=${{background:"rgba(88,86,214,0.06)",color:"#5856D6",border:"1px solid rgba(88,86,214,0.12)"}}><${Ic} name="copy" size=${12} color="#5856D6"/>Salin</button>`:null}</div>
+<div ref=${scR} className="gl" style=${{maxHeight:ph==="recording"?240:400,overflowY:"auto",padding:8}}>${tr.length===0&&!im?h`<div style=${{textAlign:"center",padding:"24px 0"}}><${Ic} name="vol" size=${24} color="#C7C7CC" sw=${1.5}/><div style=${{color:"#C7C7CC",fontSize:12,marginTop:6}}>Menunggu suara...</div><div style=${{color:"#D1D1D6",fontSize:10,marginTop:2}}>Bicara dengan jelas ke mikrofon</div></div>`:null}${tr.map(function(t){return h`<div key=${t.id} class="tl f"><span style=${{fontSize:9,color:"#C7C7CC",marginRight:6}}>${fT(t.ts)}</span>${t.text}</div>`})}${im?h`<div class="tl i"><span style=${{fontSize:9,color:"#C7C7CC",marginRight:6}}>...</span>${im}</div>`:null}</div></div>`:null}
 
-${ph==="recording"&&h`<div>
-<div style=${{textAlign:"center",marginBottom:14}}>
-<div className="gl" style=${{display:"inline-flex",alignItems:"center",gap:10,padding:"10px 20px",position:"relative"}}>
-${!paused&&h`<div style=${{position:"absolute",inset:-4,borderRadius:28,border:"2px solid rgba(88,86,214,0.15)",animation:"breathe 2s infinite"}}/>`}
-<div style=${{width:8,height:8,borderRadius:4,background:paused?"#FF9F0A":"#FF453A",animation:paused?"none":"pulseRec 1.2s infinite"}}/>
-<span style=${{fontSize:18,fontWeight:700,fontVariantNumeric:"tabular-nums",color:paused?"#FF9F0A":"#5856D6"}}>${fmt(el)}</span>
-<div style=${{width:1,height:16,background:"rgba(0,0,0,0.08)"}}/>
-<span style=${{fontSize:11,color:"#8E8E93"}}>${trans.length} kalimat</span>
-</div>
-</div>
+${ph==="done"?h`<button onClick=${rsR} style=${{width:"100%",padding:"12px",borderRadius:14,border:"none",background:"rgba(88,86,214,0.08)",color:"#5856D6",fontSize:14,fontWeight:600,marginTop:12}}>Rapat Baru</button>`:null}
+</div></div>
 
-${analyser&&h`<div style=${{marginBottom:10}}><${AmpBars} active=${!paused} analyser=${analyser} h=${44}/></div>`}
+<div style=${{display:tab==="notes"?"block":"none",paddingTop:40}}><${NotesTab}/></div>
+<div style=${{display:tab==="settings"?"block":"none",paddingTop:40}}><${SetTab}/></div>
 
-<div style=${{display:"flex",gap:6,marginBottom:12}}>
-<button onClick=${function(e){e.preventDefault();togglePause();}} style=${{flex:1,padding:"12px",borderRadius:14,border:"none",background:paused?"rgba(50,215,75,0.1)":"rgba(255,159,10,0.1)",color:paused?"#32D74B":"#FF9F0A",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-<${Ic} name=${paused?"play":"pause"} size=${16} color=${paused?"#32D74B":"#FF9F0A"}/>
-${paused?"Lanjut":"Jeda"}
-</button>
-<button onClick=${function(e){e.preventDefault();stopRecording();}} style=${{flex:1,padding:"12px",borderRadius:14,border:"none",background:"#FF453A",color:"#FFF",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-<${Ic} name="stop" size=${16} color="#FFF"/>
-Selesai
-</button>
-</div>
+${ph==="recording"&&tab!=="rec"?h`<div onClick=${function(){sT("rec")}} style=${{position:"fixed",top:0,left:0,right:0,zIndex:99,background:"rgba(88,86,214,0.95)",backdropFilter:"blur(20px)",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",paddingTop:"max(8px, env(safe-area-inset-top))"}}><div style=${{display:"flex",alignItems:"center",gap:8}}><div style=${{width:6,height:6,borderRadius:3,background:"#FF453A",animation:"pulseRec 1.2s infinite"}}/><span style=${{color:"#FFF",fontSize:12,fontWeight:600}}>Merekam · ${fmt(el)} · ${tr.length} kalimat</span></div><span style=${{color:"rgba(255,255,255,0.7)",fontSize:11}}>Tap kembali</span></div>`:null}
 
-<button onClick=${function(e){e.preventDefault();doSummarize();}} disabled=${sumLd||trans.length<2} style=${{width:"100%",padding:"10px",borderRadius:12,border:"1px solid rgba(88,86,214,0.15)",background:sumLd?"rgba(88,86,214,0.03)":"rgba(88,86,214,0.06)",color:sumLd?"#8E8E93":"#5856D6",fontSize:12,fontWeight:600,marginBottom:12,display:"flex",alignItems:"center",justifyContent:"center",gap:6,opacity:sumLd||trans.length<2?0.5:1}}>
-<${Ic} name="zap" size=${14} color=${sumLd?"#8E8E93":"#5856D6"}/>
-${sumLd?"Meringkas...":"Ringkas Sekarang"}
-</button>
-</div>`}
-
-${(ph==="recording"||ph==="done")&&renderSummaries()}
-${(ph==="recording"||ph==="done")&&renderTranscript()}
-
-${ph==="done"&&h`<div style=${{display:"flex",gap:6,marginTop:12}}>
-<button onClick=${function(e){e.preventDefault();resetRec();}} style=${{flex:1,padding:"12px",borderRadius:14,border:"none",background:"rgba(88,86,214,0.08)",color:"#5856D6",fontSize:14,fontWeight:600}}>Rapat Baru</button>
-</div>`}
-
-</div></div>`;
-}
-
-function renderSummaries(){
-if(sums.length===0&&!sumLd)return null;
-return h`<div style=${{marginBottom:12}}>
-<div style=${{fontSize:11,fontWeight:700,color:"#5856D6",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:6,display:"flex",alignItems:"center",gap:4}}>
-<${Ic} name="list" size=${13} color="#5856D6"/>Ringkasan AI
-</div>
-${sums.map(function(s,i){
-return h`<div key=${s.id} class="sblock" style=${{animationDelay:i*0.05+"s"}}>
-<div style=${{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-<span style=${{fontSize:10,fontWeight:600,color:"#5856D6"}}>Bagian ${i+1}</span>
-<span style=${{fontSize:9,color:"#8E8E93"}}>${fmtTs(s.ts)} · baris ${s.fromLine}-${s.toLine}</span>
-</div>
-<p style=${{fontSize:13,lineHeight:1.6,margin:0,color:"#1C1C1E",whiteSpace:"pre-wrap"}}>${s.text}</p>
-</div>`;
-})}
-${sumLd&&h`<div class="sblock" style=${{display:"flex",alignItems:"center",gap:8}}>
-<div style=${{width:5,height:5,borderRadius:3,background:"#5856D6",animation:"blink 1s infinite"}}/>
-<span style=${{fontSize:12,color:"#8E8E93"}}>Sedang meringkas...</span>
-</div>`}
+<div className="btab">${[["rec","mic","Rekam"],["notes","file","Catatan"],["settings","settings","Pengaturan"]].map(function(t){return h`<button key=${t[0]} className=${tab===t[0]?"on":""} onClick=${function(){sT(t[0])}}><${Ic} name=${t[1]} size=${18} color=${tab===t[0]?"#5856D6":"#8E8E93"}/>${t[2]}</button>`})}</div>
 </div>`;
 }
 
-function renderTranscript(){
-return h`<div style=${{marginBottom:8}}>
-<div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-<span style=${{fontSize:11,fontWeight:700,color:"#8E8E93",textTransform:"uppercase",letterSpacing:"0.5px",display:"flex",alignItems:"center",gap:4}}>
-<${Ic} name="text" size=${13} color="#8E8E93"/>Transkrip
-</span>
-${ph==="done"&&trans.length>0&&h`<button onClick=${function(e){e.preventDefault();copyAll();}} class="obtn" style=${{background:"rgba(88,86,214,0.06)",color:"#5856D6",border:"1px solid rgba(88,86,214,0.12)"}}>
-<${Ic} name="copy" size=${12} color="#5856D6"/>Salin
-</button>`}
-</div>
-<div ref=${scrollRef} className="gl" style=${{maxHeight:ph==="recording"?220:400,overflowY:"auto",padding:8,WebkitOverflowScrolling:"touch"}}>
-${trans.length===0&&!interim&&h`<div style=${{textAlign:"center",padding:"24px 0",color:"#C7C7CC",fontSize:12}}>Menunggu suara...</div>`}
-${trans.map(function(t){
-return h`<div key=${t.id} class="tline final">
-<span style=${{fontSize:9,color:"#C7C7CC",marginRight:6}}>${fmtTs(t.ts)}</span>${t.text}
-</div>`;
-})}
-${interim&&h`<div class="tline interim">${interim}</div>`}
-</div>
-</div>`;
-}
+/* NOTES TAB */
+function NotesTab(){var _s=us(ST.gl()),ss=_s[0],sS=_s[1],_o=us(null),oi=_o[0],sO=_o[1],_q=us(""),q=_q[0],sQ=_q[1],_g=us(null),gi=_g[0],sG=_g[1],_f=us({}),fs=_f[0],sF=_f[1];
+function dl(id){ST.ds(id);sS(ST.gl())}
+function gn(s){sG(s.id);var t=s.tr.map(function(x){return x.text}).join("\n"),es=(s.su||[]).map(function(x){return x.text}).join("\n\n");aiCall("RINGKASAN:\n"+es+"\n\nTRANSKRIP:\n"+t.substring(0,4000)+"\n\nNotulen final: 1.TOPIK 2.KEPUTUSAN 3.ACTION ITEMS 4.CATATAN","Notulen profesional. Indonesia. JANGAN markdown.").then(function(x){sF(function(p){var n=Object.assign({},p);n[s.id]=x;return n});sG(null)})}
+function cp(s){var t="NOTULEN\n"+s.title+"\n"+new Date(s.ts).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\n\n";if(fs[s.id])t+="=== NOTULEN FINAL ===\n\n"+fs[s.id]+"\n\n";t+="=== RINGKASAN ===\n\n"+(s.su||[]).map(function(x,i){return"[Bagian "+(i+1)+"]\n"+x.text}).join("\n\n")+"\n\n=== TRANSKRIP ===\n\n"+s.tr.map(function(x){return"["+fT(x.ts)+"] "+x.text}).join("\n");navigator.clipboard.writeText(t).then(function(){alert("Tersalin!")})}
+var fl=ss.filter(function(s){if(!q)return true;var w=q.toLowerCase();return s.title.toLowerCase().indexOf(w)>-1||s.tr.some(function(t){return t.text.toLowerCase().indexOf(w)>-1})});
+if(!ss.length)return h`<div style=${{padding:"60px 20px",textAlign:"center"}}><${Ic} name="file" size=${40} color="#C7C7CC" sw=${1.5}/><p style=${{fontSize:14,color:"#8E8E93",marginTop:10}}>Belum ada catatan.</p></div>`;
+return h`<div style=${{padding:"10px 16px"}}><div style=${{display:"flex",justifyContent:"space-between",marginBottom:10}}><span style=${{fontWeight:700,fontSize:17}}>Catatan Rapat</span><span style=${{fontSize:11,color:"#8E8E93"}}>${ss.length}</span></div>
+<div style=${{position:"relative",marginBottom:10}}><input class="fi" value=${q} onInput=${function(e){sQ(e.target.value)}} placeholder="Cari..." style=${{paddingLeft:34}}/><div style=${{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}}><${Ic} name="search" size=${14} color="#C7C7CC"/></div></div>
+${fl.map(function(s){var io=oi===s.id;return h`<div key=${s.id} className="gl" style=${{marginBottom:8,overflow:"hidden"}}><div onClick=${function(){sO(io?null:s.id)}} style=${{padding:"12px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}><div style=${{width:36,height:36,borderRadius:10,background:"rgba(88,86,214,0.08)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6",flexShrink:0}}><${Ic} name="file" size=${17}/></div><div style=${{flex:1,minWidth:0}}><div style=${{fontWeight:600,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${s.title}</div><div style=${{fontSize:11,color:"#8E8E93"}}>${new Date(s.ts).toLocaleDateString("id-ID",{day:"numeric",month:"short"})} · ${fmt(s.dur)} · ${s.tr.length} kalimat</div></div><span style=${{transform:io?"rotate(90deg)":"none",transition:"0.2s",flexShrink:0}}><${Ic} name="chevR" size=${14} color="#C7C7CC"/></span></div>
+${io?h`<div style=${{padding:"0 14px 14px",animation:"fadeIn .2s"}}><div style=${{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap"}}><button onClick=${function(e){e.stopPropagation();gn(s)}} disabled=${gi===s.id} class="ob" style=${{background:"rgba(88,86,214,0.06)",color:"#5856D6",border:"1px solid rgba(88,86,214,0.12)",opacity:gi===s.id?0.5:1}}><${Ic} name="bot" size=${12} color="#5856D6"/>${gi===s.id?"Membuat...":"Notulen Final AI"}</button><button onClick=${function(e){e.stopPropagation();cp(s)}} class="ob" style=${{background:"rgba(0,0,0,0.03)",color:"#48484A",border:"1px solid rgba(0,0,0,0.08)"}}><${Ic} name="copy" size=${12}/>Salin</button><button onClick=${function(e){e.stopPropagation();if(confirm("Hapus?"))dl(s.id)}} class="ob" style=${{background:"rgba(255,69,58,0.04)",color:"#FF453A",border:"1px solid rgba(255,69,58,0.12)"}}><${Ic} name="trash" size=${12} color="#FF453A"/>Hapus</button></div>
+${fs[s.id]?h`<div style=${{padding:14,borderRadius:14,background:"rgba(88,86,214,0.04)",border:"1px solid rgba(88,86,214,0.1)",marginBottom:10}}><div style=${{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><${Ic} name="bot" size=${14} color="#5856D6"/><span style=${{fontWeight:600,fontSize:12,color:"#5856D6"}}>Notulen Final</span></div><p style=${{fontSize:13,lineHeight:1.6,margin:0,whiteSpace:"pre-wrap"}}>${fs[s.id]}</p></div>`:null}
+${(s.su||[]).length>0?h`<div style=${{marginBottom:10}}><div style=${{fontSize:10,fontWeight:700,color:"#5856D6",marginBottom:4}}>RINGKASAN</div>${s.su.map(function(x,i){return h`<div key=${i} style=${{padding:"8px 10px",borderRadius:10,background:"rgba(88,86,214,0.03)",border:"1px solid rgba(88,86,214,0.06)",marginBottom:4}}><p style=${{fontSize:12,lineHeight:1.5,margin:0,whiteSpace:"pre-wrap"}}>${x.text}</p></div>`})}</div>`:null}
+<div><div style=${{fontSize:10,fontWeight:700,color:"#8E8E93",marginBottom:4}}>TRANSKRIP</div><div style=${{maxHeight:300,overflowY:"auto",background:"rgba(255,255,255,0.3)",borderRadius:12,padding:6}}>${s.tr.map(function(t,i){return h`<div key=${i} style=${{padding:"4px 8px",fontSize:12,lineHeight:1.4,borderBottom:"1px solid rgba(0,0,0,0.03)"}}><span style=${{fontSize:9,color:"#C7C7CC",marginRight:4}}>${fT(t.ts)}</span>${t.text}</div>`})}</div></div></div>`:null}</div>`})}</div>`}
 
-/* ════════════════════════
-   TAB: CATATAN
-   ════════════════════════ */
-function renderNotes(){
-var _sessions=us(ST.gl()),sessions=_sessions[0],sSessions=_sessions[1];
-var _open=us(null),openId=_open[0],sOpen=_open[1];
-var _search=us(""),search=_search[0],sSearch=_search[1];
-var _genId=us(null),genId=_genId[0],sGenId=_genId[1];
-var _fullSums=us({}),fullSums=_fullSums[0],sFull=_fullSums[1];
-
-function del(id){ST.ds(id);sSessions(ST.gl());}
-
-function genFull(sess){
-sGenId(sess.id);
-var allText=sess.transcript.map(function(t){return t.text;}).join("\n");
-var existSums=(sess.summaries||[]).map(function(s){return s.text;}).join("\n\n");
-aiCall(
-"RINGKASAN SEGMEN:\n"+existSums+"\n\nTRANSKRIP:\n"+allText.substring(0,4000)+
-"\n\nBuat notulen rapat final:\n1. TOPIK UTAMA\n2. KEPUTUSAN\n3. ACTION ITEMS\n4. CATATAN PENTING\nPoin bernomor biasa.",
-"Anda asisten notulen rapat profesional. Bahasa Indonesia. Notulen akhir lengkap terstruktur. JANGAN markdown bold/italic/heading."
-).then(function(text){sFull(function(p){var n=Object.assign({},p);n[sess.id]=text;return n;});sGenId(null);});
-}
-
-function copySess(sess){
-var text="NOTULEN RAPAT\n"+sess.title+"\n"+
-new Date(sess.ts).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\nDurasi: "+fmt(sess.duration)+"\n\n";
-if(fullSums[sess.id])text+="=== NOTULEN FINAL ===\n\n"+fullSums[sess.id]+"\n\n";
-text+="=== RINGKASAN ===\n\n"+(sess.summaries||[]).map(function(s,i){return"[Bagian "+(i+1)+"]\n"+s.text;}).join("\n\n")+
-"\n\n=== TRANSKRIP ===\n\n"+sess.transcript.map(function(t){return"["+fmtTs(t.ts)+"] "+t.text;}).join("\n");
-navigator.clipboard.writeText(text).then(function(){alert("Tersalin!");});
-}
-
-var filtered=sessions.filter(function(s){
-if(!search)return true;
-var q=search.toLowerCase();
-return s.title.toLowerCase().indexOf(q)>-1||s.transcript.some(function(t){return t.text.toLowerCase().indexOf(q)>-1;});
-});
-
-if(!sessions.length)return h`<div style=${{padding:"60px 20px",textAlign:"center"}}><${Ic} name="file" size=${40} color="#C7C7CC" sw=${1.5}/><p style=${{fontSize:14,color:"#8E8E93",marginTop:10}}>Belum ada catatan rapat.</p><p style=${{fontSize:12,color:"#C7C7CC",marginTop:4}}>Mulai rekam di tab Rekam.</p></div>`;
-
-return h`<div style=${{padding:"10px 16px"}}>
-<div style=${{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-<span style=${{fontWeight:700,fontSize:17}}>Catatan Rapat</span>
-<span style=${{fontSize:11,color:"#8E8E93"}}>${sessions.length} rapat</span>
-</div>
-<div style=${{position:"relative",marginBottom:10}}>
-<input class="fi" value=${search} onInput=${function(e){sSearch(e.target.value);}} placeholder="Cari..." style=${{paddingLeft:34,fontSize:13}}/>
-<div style=${{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}}><${Ic} name="search" size=${14} color="#C7C7CC"/></div>
-</div>
-
-${filtered.map(function(sess){
-var isOpen=openId===sess.id;
-return h`<div key=${sess.id} className="gl" style=${{marginBottom:8,overflow:"hidden"}}>
-<div onClick=${function(){sOpen(isOpen?null:sess.id);}} style=${{padding:"12px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-<div style=${{width:36,height:36,borderRadius:10,background:"rgba(88,86,214,0.08)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6",flexShrink:0}}><${Ic} name="file" size=${17}/></div>
-<div style=${{flex:1,minWidth:0}}>
-<div style=${{fontWeight:600,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${sess.title}</div>
-<div style=${{fontSize:11,color:"#8E8E93",marginTop:1}}>${new Date(sess.ts).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})} · ${fmt(sess.duration)} · ${sess.transcript.length} kalimat</div>
-</div>
-<span style=${{transform:isOpen?"rotate(90deg)":"none",transition:"0.2s",flexShrink:0}}><${Ic} name="chevRight" size=${14} color="#C7C7CC"/></span>
-</div>
-
-${isOpen&&h`<div style=${{padding:"0 14px 14px",animation:"fadeIn .2s"}}>
-<div style=${{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap"}}>
-<button onClick=${function(e){e.preventDefault();e.stopPropagation();genFull(sess);}} disabled=${genId===sess.id} class="obtn" style=${{background:"rgba(88,86,214,0.06)",color:"#5856D6",border:"1px solid rgba(88,86,214,0.12)",opacity:genId===sess.id?0.5:1}}>
-<${Ic} name="bot" size=${12} color="#5856D6"/>${genId===sess.id?"Membuat...":"Notulen Final AI"}
-</button>
-<button onClick=${function(e){e.preventDefault();e.stopPropagation();copySess(sess);}} class="obtn" style=${{background:"rgba(0,0,0,0.03)",color:"#48484A",border:"1px solid rgba(0,0,0,0.08)"}}>
-<${Ic} name="copy" size=${12}/>Salin
-</button>
-<button onClick=${function(e){e.preventDefault();e.stopPropagation();if(confirm("Hapus catatan ini?"))del(sess.id);}} class="obtn" style=${{background:"rgba(255,69,58,0.04)",color:"#FF453A",border:"1px solid rgba(255,69,58,0.12)"}}>
-<${Ic} name="trash" size=${12} color="#FF453A"/>Hapus
-</button>
-</div>
-
-${fullSums[sess.id]&&h`<div style=${{padding:14,borderRadius:14,background:"rgba(88,86,214,0.04)",border:"1px solid rgba(88,86,214,0.1)",marginBottom:10}}>
-<div style=${{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-<div style=${{width:22,height:22,borderRadius:6,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}><${Ic} name="bot" size=${12} color="#5856D6"/></div>
-<span style=${{fontWeight:600,fontSize:12,color:"#5856D6"}}>Notulen Final</span>
-</div>
-<p style=${{fontSize:13,lineHeight:1.6,margin:0,whiteSpace:"pre-wrap"}}>${fullSums[sess.id]}</p>
-</div>`}
-
-${(sess.summaries||[]).length>0&&h`<div style=${{marginBottom:10}}>
-<div style=${{fontSize:10,fontWeight:700,color:"#5856D6",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>Ringkasan</div>
-${sess.summaries.map(function(s,i){
-return h`<div key=${s.id||i} style=${{padding:"8px 10px",borderRadius:10,background:"rgba(88,86,214,0.03)",border:"1px solid rgba(88,86,214,0.06)",marginBottom:4}}>
-<div style=${{fontSize:9,color:"#8E8E93",marginBottom:3}}>Bagian ${i+1} · baris ${s.fromLine}-${s.toLine}</div>
-<p style=${{fontSize:12,lineHeight:1.5,margin:0,whiteSpace:"pre-wrap"}}>${s.text}</p>
-</div>`;
-})}
-</div>`}
-
-<div>
-<div style=${{fontSize:10,fontWeight:700,color:"#8E8E93",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>Transkrip</div>
-<div style=${{maxHeight:300,overflowY:"auto",background:"rgba(255,255,255,0.3)",borderRadius:12,padding:6}}>
-${sess.transcript.map(function(t){
-return h`<div key=${t.id} style=${{padding:"4px 8px",fontSize:12,lineHeight:1.4,borderBottom:"1px solid rgba(0,0,0,0.03)"}}>
-<span style=${{fontSize:9,color:"#C7C7CC",marginRight:4}}>${fmtTs(t.ts)}</span>${t.text}
-</div>`;
-})}
-</div>
-</div>
-</div>`}
-</div>`;
-})}
-</div>`;
-}
-
-/* ════════════════════════
-   TAB: PENGATURAN
-   ════════════════════════ */
-function renderSettings(){
-var _s=us(ST.gs()),stg=_s[0],sStg=_s[1];
-var _showKey=us(false),showKey=_showKey[0],sShow=_showKey[1];
-function save(k,v){var n=Object.assign({},stg);n[k]=v;sStg(n);ST.ss(n);}
-
-return h`<div style=${{padding:"10px 16px"}}>
-<div style=${{fontWeight:700,fontSize:17,marginBottom:12}}>Pengaturan</div>
-
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-<div style=${{width:28,height:28,borderRadius:8,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="key" size=${15}/></div>
-<span style=${{fontWeight:600,fontSize:14}}>API Key</span>
-</div>
-
-<div style=${{marginBottom:10}}>
-<div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Provider</div>
-<div style=${{display:"flex",gap:4}}>
-${[["groq","Groq (gratis)"],["anthropic","Anthropic"]].map(function(pr){
-var on=stg.apiProvider===pr[0];
-return h`<button key=${pr[0]} onClick=${function(e){e.preventDefault();save("apiProvider",pr[0]);}} style=${{flex:1,padding:"9px",borderRadius:10,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.06)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${pr[1]}</button>`;
-})}
-</div>
-</div>
-
-<div>
-<div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:3}}>${stg.apiProvider==="groq"?"Groq API Key":"Anthropic API Key"}</div>
-<div style=${{position:"relative"}}>
-<input class="fi" type=${showKey?"text":"password"} value=${stg.apiKey||""} onInput=${function(e){save("apiKey",e.target.value);}} placeholder=${stg.apiProvider==="groq"?"gsk_...":"sk-ant-..."} style=${{paddingRight:40}}/>
-<button onClick=${function(e){e.preventDefault();sShow(!showKey);}} style=${{position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",border:"none",background:"transparent",padding:4}}>
-<${Ic} name="eye" size=${14} color="#C7C7CC"/>
-</button>
-</div>
-${stg.apiKey&&h`<div style=${{fontSize:10,color:"#32D74B",marginTop:4,display:"flex",alignItems:"center",gap:3}}>
-<${Ic} name="check" size=${10} color="#32D74B"/>Key tersimpan
-</div>`}
-</div>
-</div>
-
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-<div style=${{width:28,height:28,borderRadius:8,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#30B0C7"}}><${Ic} name="globe" size=${15}/></div>
-<span style=${{fontWeight:600,fontSize:14}}>Bahasa Transkripsi</span>
-</div>
-<div style=${{display:"flex",flexDirection:"column",gap:4}}>
-${[["id-ID","Bahasa Indonesia"],["en-US","English (US)"],["en-GB","English (UK)"]].map(function(l){
-var on=stg.lang===l[0];
-return h`<button key=${l[0]} onClick=${function(e){e.preventDefault();save("lang",l[0]);}} style=${{padding:"10px 12px",borderRadius:12,border:"1px solid "+(on?"rgba(48,176,199,0.3)":"rgba(0,0,0,0.06)"),background:on?"rgba(48,176,199,0.06)":"rgba(255,255,255,0.5)",fontSize:13,fontWeight:on?600:400,color:on?"#30B0C7":"#48484A",textAlign:"left",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-${l[1]}
-${on&&h`<${Ic} name="check" size=${14} color="#30B0C7"/>`}
-</button>`;
-})}
-</div>
-</div>
-
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-<div style=${{width:28,height:28,borderRadius:8,background:"rgba(255,159,10,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#FF9F0A"}}><${Ic} name="clock" size=${15}/></div>
-<span style=${{fontWeight:600,fontSize:14}}>Interval Ringkasan AI</span>
-</div>
-<div style=${{fontSize:11,color:"#8E8E93",marginBottom:8}}>AI otomatis meringkas percakapan setiap interval ini.</div>
-<div style=${{display:"flex",gap:4}}>
-${[[1,"1 mnt"],[2,"2 mnt"],[3,"3 mnt"],[5,"5 mnt"]].map(function(v){
-var on=stg.interval===v[0];
-return h`<button key=${v[0]} onClick=${function(e){e.preventDefault();save("interval",v[0]);}} style=${{flex:1,padding:"10px 4px",borderRadius:10,border:"1px solid "+(on?"rgba(255,159,10,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(255,159,10,0.06)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#FF9F0A":"#8E8E93"}}>${v[1]}</button>`;
-})}
-</div>
-</div>
-
-<div className="gl" style=${{padding:16,marginBottom:12}}>
-<div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-<div style=${{width:28,height:28,borderRadius:8,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="hash" size=${15}/></div>
-<span style=${{fontWeight:600,fontSize:14}}>Tentang</span>
-</div>
-<div style=${{fontSize:12,color:"#636366",lineHeight:1.6}}>Notulen AI mentranskripsi percakapan real-time (Web Speech API) dan meringkas poin penting menggunakan AI (Groq/Anthropic).</div>
-<div style=${{marginTop:8,fontSize:11,color:"#8E8E93"}}>v2.0 · Speech Recognition + LLM</div>
-<div style=${{marginTop:6,padding:"8px 10px",borderRadius:8,background:"rgba(255,69,58,0.04)",border:"1px solid rgba(255,69,58,0.08)",fontSize:11,color:"#FF453A"}}>Data tersimpan di perangkat (localStorage). Bukan pengganti notulen resmi.</div>
-</div>
-</div>`;
-}
-
-/* ════════════════════════
-   RENDER
-   ════════════════════════ */
-return h`<div>
-<div style=${{display:tab==="rec"?"block":"none",paddingTop:0}}>${renderRec()}</div>
-<div style=${{display:tab==="notes"?"block":"none",paddingTop:40}}>${renderNotes()}</div>
-<div style=${{display:tab==="settings"?"block":"none",paddingTop:40}}>${renderSettings()}</div>
-
-${ph==="recording"&&tab!=="rec"&&h`<div onClick=${function(){sTab("rec");}} style=${{position:"fixed",top:0,left:0,right:0,zIndex:99,background:"rgba(88,86,214,0.95)",backdropFilter:"blur(20px)",padding:"6px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",paddingTop:"max(6px, env(safe-area-inset-top))"}}>
-<div style=${{display:"flex",alignItems:"center",gap:8}}>
-<div style=${{width:6,height:6,borderRadius:3,background:"#FF453A",animation:"pulseRec 1.2s infinite"}}/>
-<span style=${{color:"#FFF",fontSize:12,fontWeight:600}}>Merekam · ${fmt(el)}</span>
-</div>
-<span style=${{color:"rgba(255,255,255,0.7)",fontSize:11}}>Tap untuk kembali</span>
-</div>`}
-
-<div className="btab">
-${[["rec","mic","Rekam"],["notes","file","Catatan"],["settings","settings","Pengaturan"]].map(function(t){
-return h`<button key=${t[0]} className=${tab===t[0]?"on":""} onClick=${function(e){e.preventDefault();sTab(t[0]);}}>
-<${Ic} name=${t[1]} size=${18} color=${tab===t[0]?"#5856D6":"#8E8E93"}/>${t[2]}
-</button>`;
-})}
-</div>
-</div>`;
-}
+/* SETTINGS TAB */
+function SetTab(){var _s=us(ST.gs()),sg=_s[0],sG=_s[1],_k=us(false),sk=_k[0],sK=_k[1];function sv(k,v){var n=Object.assign({},sg);n[k]=v;sG(n);ST.ss(n)}
+return h`<div style=${{padding:"10px 16px"}}><div style=${{fontWeight:700,fontSize:17,marginBottom:12}}>Pengaturan</div>
+<div className="gl" style=${{padding:16,marginBottom:12}}><div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><div style=${{width:28,height:28,borderRadius:8,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="key" size=${15}/></div><span style=${{fontWeight:600,fontSize:14}}>API Key</span></div>
+<div style=${{marginBottom:10}}><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Provider</div><div style=${{display:"flex",gap:4}}>${[["groq","Groq (gratis)"],["anthropic","Anthropic"]].map(function(p){var on=sg.ap===p[0];return h`<button key=${p[0]} onClick=${function(){sv("ap",p[0])}} style=${{flex:1,padding:"9px",borderRadius:10,border:"1px solid "+(on?"rgba(88,86,214,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(88,86,214,0.06)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#5856D6":"#8E8E93"}}>${p[1]}</button>`})}</div></div>
+<div><div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:3}}>${sg.ap==="groq"?"Groq API Key":"Anthropic API Key"}</div><div style=${{position:"relative"}}><input class="fi" type=${sk?"text":"password"} value=${sg.ak||""} onInput=${function(e){sv("ak",e.target.value)}} placeholder=${sg.ap==="groq"?"gsk_...":"sk-ant-..."} style=${{paddingRight:40}}/><button onClick=${function(){sK(!sk)}} style=${{position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",border:"none",background:"transparent",padding:4}}><${Ic} name="eye" size=${14} color="#C7C7CC"/></button></div>${sg.ak?h`<div style=${{fontSize:10,color:"#32D74B",marginTop:4,display:"flex",alignItems:"center",gap:3}}><${Ic} name="check" size=${10} color="#32D74B"/>Tersimpan</div>`:null}</div></div>
+<div className="gl" style=${{padding:16,marginBottom:12}}><div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><div style=${{width:28,height:28,borderRadius:8,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#30B0C7"}}><${Ic} name="globe" size=${15}/></div><span style=${{fontWeight:600,fontSize:14}}>Bahasa</span></div><div style=${{display:"flex",flexDirection:"column",gap:4}}>${[["id-ID","Bahasa Indonesia"],["en-US","English (US)"],["en-GB","English (UK)"]].map(function(l){var on=sg.ln===l[0];return h`<button key=${l[0]} onClick=${function(){sv("ln",l[0])}} style=${{padding:"10px 12px",borderRadius:12,border:"1px solid "+(on?"rgba(48,176,199,0.3)":"rgba(0,0,0,0.06)"),background:on?"rgba(48,176,199,0.06)":"rgba(255,255,255,0.5)",fontSize:13,fontWeight:on?600:400,color:on?"#30B0C7":"#48484A",textAlign:"left",display:"flex",alignItems:"center",justifyContent:"space-between"}}>${l[1]}${on?h`<${Ic} name="check" size=${14} color="#30B0C7"/>`:null}</button>`})}</div></div>
+<div className="gl" style=${{padding:16,marginBottom:12}}><div style=${{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><div style=${{width:28,height:28,borderRadius:8,background:"rgba(255,159,10,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#FF9F0A"}}><${Ic} name="clock" size=${15}/></div><span style=${{fontWeight:600,fontSize:14}}>Interval Ringkasan</span></div><div style=${{fontSize:11,color:"#8E8E93",marginBottom:8}}>AI meringkas setiap interval ini.</div><div style=${{display:"flex",gap:4}}>${[[1,"1m"],[2,"2m"],[3,"3m"],[5,"5m"]].map(function(v){var on=sg.iv===v[0];return h`<button key=${v[0]} onClick=${function(){sv("iv",v[0])}} style=${{flex:1,padding:"10px 4px",borderRadius:10,border:"1px solid "+(on?"rgba(255,159,10,0.3)":"rgba(0,0,0,0.08)"),background:on?"rgba(255,159,10,0.06)":"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,color:on?"#FF9F0A":"#8E8E93"}}>${v[1]}</button>`})}</div></div>
+<div className="gl" style=${{padding:16}}><div style=${{fontSize:12,color:"#636366"}}>Notulen AI v3</div><div style=${{marginTop:6,padding:"8px 10px",borderRadius:8,background:"rgba(255,69,58,0.04)",border:"1px solid rgba(255,69,58,0.08)",fontSize:11,color:"#FF453A"}}>Data di localStorage. Bukan pengganti notulen resmi.</div></div></div>`}
 
 ReactDOM.createRoot(document.getElementById("root")).render(h`<${App}/>`);
 </script>
