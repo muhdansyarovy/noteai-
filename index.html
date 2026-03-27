@@ -73,24 +73,57 @@ ue(function(){if(scR.current)scR.current.scrollTop=scR.current.scrollHeight},[tr
 
 function kSR(){saR.current=false;clearTimeout(rtR.current);if(srR.current){try{srR.current.onend=null;srR.current.onerror=null;srR.current.onresult=null;srR.current.onstart=null;srR.current.onspeechstart=null;srR.current.onspeechend=null;srR.current.abort()}catch(e){}srR.current=null}}
 
-function bSR(){kSR();var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){sEm("Browser tidak support. Pakai Chrome/Edge.");sSs("x");return}var ln=ST.gs().ln||"id-ID",r=new SR();r.continuous=true;r.interimResults=true;r.lang=ln;r.maxAlternatives=1;
+function bSR(){kSR();var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){sEm("Browser tidak support. Pakai Chrome/Safari terbaru.");sSs("x");return}var ln=ST.gs().ln||"id-ID",r=new SR();r.continuous=true;r.interimResults=true;r.lang=ln;r.maxAlternatives=1;
 r.onstart=function(){saR.current=true;sSs("on")};
 r.onspeechstart=function(){sSs("sp")};
 r.onspeechend=function(){sSs("on")};
 r.onresult=function(e){if(paR.current)return;var fn="",tp="";for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)fn+=t;else tp+=t}if(fn.trim()){sTr(function(p){return p.concat([{id:Date.now()+"_"+Math.random().toString(36).substr(2,4),text:fn.trim(),ts:Date.now()}])});sIm("")}else if(tp){sIm(tp)}};
-r.onerror=function(e){saR.current=false;if(e.error==="not-allowed"){sEm("Izin mikrofon ditolak. Refresh halaman.");sSs("no");return}if(e.error==="network"){sEm("Speech Recognition butuh internet (Chrome kirim audio ke Google). Pastikan online.");sSs("net")}if(e.error==="no-speech")sSs("sil")};
+r.onerror=function(e){saR.current=false;if(e.error==="not-allowed"){sEm("Izin mikrofon ditolak. Refresh halaman.");sSs("no");return}if(e.error==="network"){sEm("Speech Recognition butuh internet. Pastikan online.");sSs("net")}if(e.error==="no-speech")sSs("sil")};
 r.onend=function(){saR.current=false;if(phR.current==="recording"&&!paR.current){sSs("re");clearTimeout(rtR.current);rtR.current=setTimeout(function(){if(phR.current==="recording"&&!paR.current)bSR()},400)}};
 srR.current=r;sSs("st");try{r.start()}catch(ex){setTimeout(function(){if(phR.current==="recording"&&!paR.current)bSR()},800)}}
 
 function doS(){var al=trR.current,fr=lsR.current,nw=al.slice(fr);if(nw.length<2)return;sSl(true);var bk=nw.map(function(t,i){return(fr+i+1)+". "+t.text}).join("\n"),fl=al.map(function(t){return t.text}).join("\n");aiCall("Transkrip rapat (baris "+(fr+1)+" s/d "+al.length+"):\n\n"+bk+"\n\nKonteks:\n"+fl.substring(0,2000)+"\n\nRingkasan poin penting bernomor, singkat. Identifikasi keputusan, action item, topik utama.","Anda asisten notulen profesional. Bahasa Indonesia. JANGAN markdown bold/italic.").then(function(txt){sSl(false);sSu(function(p){return p.concat([{id:Date.now(),ts:Date.now(),fl:fr+1,tl:al.length,text:txt}])});lsR.current=al.length})}
 
-function stR(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert("Browser tidak support Speech Recognition.\nGunakan Chrome atau Edge.");return}sEm("");sTr([]);sSu([]);sE(0);sIm("");lsR.current=0;sPa(false);sSs("");navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(st){msR.current=st;var ac=new(window.AudioContext||window.webkitAudioContext)();acR.current=ac;var src=ac.createMediaStreamSource(st),na=ac.createAnalyser();na.fftSize=2048;na.smoothingTimeConstant=0.8;src.connect(na);sAn(na);sP("recording");bSR();tmR.current=setInterval(function(){sE(function(e){return e+1})},1000);var ms=(ST.gs().iv||2)*60*1000;smR.current=setInterval(function(){if(!paR.current&&phR.current==="recording")doS()},ms)}).catch(function(e){sEm("Gagal akses mikrofon: "+e.message);alert("Gagal akses mikrofon: "+e.message)})}
+function stR(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){alert("Browser tidak support Speech Recognition.\nGunakan Chrome atau Safari terbaru.");return}
+    sEm("");sTr([]);sSu([]);sE(0);sIm("");lsR.current=0;
+    
+    // Paksa sinkron state dan ref
+    sPa(false); paR.current=false;
+    sP("recording"); phR.current="recording";
+    sSs("");
+    
+    // 1. LANGSUNG JALANKAN SPEECH RECOGNITION (Synchronous)
+    bSR();
+    
+    // 2. Set timer durasi & AI
+    tmR.current=setInterval(function(){sE(function(e){return e+1})},1000);
+    var ms=(ST.gs().iv||2)*60*1000;
+    smR.current=setInterval(function(){if(!paR.current&&phR.current==="recording")doS()},ms);
+    
+    // 3. Jalankan visualizer audio di latar belakang (Asynchronous)
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})
+        .then(function(st){
+            msR.current=st;
+            var ac=new(window.AudioContext||window.webkitAudioContext)();
+            acR.current=ac;
+            var src=ac.createMediaStreamSource(st),na=ac.createAnalyser();
+            na.fftSize=2048;na.smoothingTimeConstant=0.8;
+            src.connect(na);
+            sAn(na);
+        }).catch(function(e){
+            console.log("Visualizer mic info:", e.message); // Jangan throw error, biarkan transkrip tetap jalan
+        });
+    }
+}
 
-function tgP(){var nx=!paR.current;sPa(nx);if(nx){kSR();sSs("pa")}else bSR()}
+function tgP(){var nx=!paR.current;sPa(nx);paR.current=nx;if(nx){kSR();sSs("pa")}else bSR()}
 
-function spR(){clearInterval(tmR.current);clearInterval(smR.current);sP("done");kSR();sSs("");if(msR.current){msR.current.getTracks().forEach(function(t){t.stop()});msR.current=null}if(acR.current&&acR.current.state!=="closed")acR.current.close();sAn(null);sIm("");if(trR.current.length>lsR.current&&trR.current.length>=2)doS();var ttl=ti||("Rapat "+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}));ST.as({id:Date.now()+"",title:ttl,ts:Date.now(),dur:el,tr:trR.current,su:suR.current.concat([]),ln:ST.gs().ln})}
+function spR(){clearInterval(tmR.current);clearInterval(smR.current);sP("done");phR.current="done";kSR();sSs("");if(msR.current){msR.current.getTracks().forEach(function(t){t.stop()});msR.current=null}if(acR.current&&acR.current.state!=="closed")acR.current.close();sAn(null);sIm("");if(trR.current.length>lsR.current&&trR.current.length>=2)doS();var ttl=ti||("Rapat "+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}));ST.as({id:Date.now()+"",title:ttl,ts:Date.now(),dur:el,tr:trR.current,su:suR.current.concat([]),ln:ST.gs().ln})}
 
-function rsR(){sP("idle");sTr([]);sSu([]);sE(0);sIm("");sTi("");sEm("");sSs("");lsR.current=0}
+function rsR(){sP("idle");phR.current="idle";sTr([]);sSu([]);sE(0);sIm("");sTi("");sEm("");sSs("");lsR.current=0}
 
 function cpA(){var tx="NOTULEN RAPAT\n"+(ti||"Rapat")+"\n"+new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+"\nDurasi: "+fmt(el)+"\n\n=== RINGKASAN ===\n\n"+su.map(function(s,i){return"[Bagian "+(i+1)+"]\n"+s.text}).join("\n\n")+"\n\n=== TRANSKRIP ===\n\n"+tr.map(function(t){return"["+fT(t.ts)+"] "+t.text}).join("\n");navigator.clipboard.writeText(tx).then(function(){alert("Tersalin!")})}
 
