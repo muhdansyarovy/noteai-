@@ -159,48 +159,60 @@ function RecTab(p){
   // Keep ref in sync with state
   isRecRef.current = isRec;
 
-  /* ── Create SR once on mount (and when lang changes) ── */
+  /* ── Create SR Engine (Self-Healing) ── */
   ue(function(){
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if(!SR) return;
 
-    var sr = new SR();
-    sr.continuous = true;
-    sr.interimResults = true;
-    sr.lang = set.lang;
-    sr.maxAlternatives = 1;
+    function initSR() {
+      var sr = new SR();
+      sr.continuous = true;
+      sr.interimResults = true;
+      sr.lang = set.lang;
+      sr.maxAlternatives = 1;
 
-    sr.onresult = function(e){
-      var f = "", i = "";
-      for(var j = e.resultIndex; j < e.results.length; j++){
-        if(e.results[j].isFinal){
-          f += e.results[j][0].transcript + " ";
-        } else {
-          i += e.results[j][0].transcript;
-        }
-      }
-      if(f) setFin(function(prev){ return prev + f; });
-      setInt(i);
-    };
-
-    sr.onerror = function(e){
-      console.log("SR Error:", e.error);
-    };
-
-    sr.onend = function(){
-      // Auto restart if still recording — use REF not state (avoids stale closure)
-      if(isRecRef.current){
-        setTimeout(function(){
-          if(isRecRef.current){
-            try{ sr.start(); } catch(ex){ console.log("SR restart err:", ex); }
+      sr.onresult = function(e){
+        var f = "", i = "";
+        for(var j = e.resultIndex; j < e.results.length; j++){
+          if(e.results[j].isFinal){
+            f += e.results[j][0].transcript + " ";
+          } else {
+            i += e.results[j][0].transcript;
           }
-        }, 300);
+        }
+        if(f) setFin(function(prev){ return prev + f; });
+        setInt(i);
+      };
+
+      sr.onerror = function(e){
+        console.log("SR Error:", e.error);
+      };
+
+      sr.onend = function(){
+        // Auto restart jika isRec masih true
+        if(isRecRef.current){
+          setTimeout(function(){
+            if(isRecRef.current){
+              srRef.current = initSR(); // Buat instance baru yang bersih
+              try{ srRef.current.start(); } catch(ex){ console.log("Restart fail:", ex); }
+            }
+          }, 300);
+        }
+      };
+
+      return sr;
+    }
+
+    srRef.current = initSR();
+
+    // Cleanup saat ganti bahasa atau pindah tab
+    return function(){
+      if(srRef.current){
+        srRef.current.onend = null; // Mencegah infinite loop start/stop
+        try{ srRef.current.stop(); } catch(e){}
       }
     };
-
-    srRef.current = sr;
-    // NO cleanup return — don't kill running SR on re-render
-  }, [set.lang]); // Only recreate when language changes
+  }, [set.lang]);
 
   // Auto-scroll transcript
   ue(function(){
@@ -240,24 +252,24 @@ function RecTab(p){
     // Reset state
     setFin(""); setInt(""); setNotes([]); setTime(0); setSaved(false);
     lastSumLen.current = 0;
+    
+    setRec(true);
 
     // Start SR directly — no setTimeout race condition
     try{
       srRef.current.start();
     } catch(e){
-      console.log("SR start error, recreating:", e);
-      // If SR is in bad state, recreate it
+      console.log("SR start error, wait for onend or recreate:", e);
+      // Fallback in case instance is bugged before start
       var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       var sr = new SR();
       sr.continuous = true; sr.interimResults = true; sr.lang = set.lang;
       sr.onresult = srRef.current.onresult;
       sr.onerror = srRef.current.onerror;
-      sr.onend = srRef.current.onend;
+      sr.onend = srRef.current.onend; // Salin fungsi self-healing
       srRef.current = sr;
       try{ sr.start(); } catch(e2){ alert("Gagal memulai Speech Recognition: " + e2.message); return; }
     }
-
-    setRec(true);
 
     // Timer & AI interval
     tmRef.current = setInterval(function(){ setTime(function(t){ return t+1; }); }, 1000);
@@ -635,7 +647,7 @@ function SetTab(p){
         <span style=${{fontWeight:600,fontSize:14}}>Tentang</span>
       </div>
       <div style=${{fontSize:12,color:"#636366",lineHeight:1.6}}>Notulen AI mentranskripsi percakapan real-time (Web Speech API) dan meringkas poin penting menggunakan AI (Groq/Anthropic).</div>
-      <div style=${{marginTop:8,fontSize:11,color:"#8E8E93"}}>v4.0 · Speech Recognition + LLM</div>
+      <div style=${{marginTop:8,fontSize:11,color:"#8E8E93"}}>v4.1 · Self-Healing Speech Recognition</div>
       <div style=${{marginTop:6,padding:"8px 10px",borderRadius:8,background:"rgba(255,69,58,0.04)",border:"1px solid rgba(255,69,58,0.08)",fontSize:11,color:"#FF453A"}}>Data tersimpan di perangkat (localStorage). Bukan pengganti notulen resmi.</div>
     </div>
   </div>`;
