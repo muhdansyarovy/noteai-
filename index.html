@@ -181,9 +181,9 @@ function RecTab(p){
 
     sr.onerror = function(e){
       console.log("SR Error:", e.error);
+      // Permission is already handled by getUserMedia, so just log
       if(e.error === "not-allowed"){
-        alert("Izin mikrofon ditolak. Refresh halaman dan izinkan akses.");
-        stopRec();
+        console.log("SR permission issue — getUserMedia should have handled this");
       }
     };
 
@@ -238,31 +238,38 @@ function RecTab(p){
       return;
     }
 
+    // Reset state
     setFin(""); setInt(""); setNotes([]); setTime(0); setSaved(false);
     lastSumLen.current = 0;
-    setRec(true); // This triggers useEffect to create & start SR
+    setRec(true); // triggers useEffect → creates SR instance
 
-    // Setup audio visualizer
-    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-      msRef.current = stream;
-      var ac = new (window.AudioContext||window.webkitAudioContext)();
-      acRef.current = ac;
-      var src = ac.createMediaStreamSource(stream);
-      var an = ac.createAnalyser();
-      an.fftSize = 2048; an.smoothingTimeConstant = 0.8;
-      src.connect(an);
-      setAn(an);
-    }).catch(function(e){ console.log("Audio vis error:", e); });
-
-    // Start after a tick to let useEffect run
+    // Start SR after useEffect tick
     setTimeout(function(){
       if(srRef.current){
-        try{ srRef.current.start(); } catch(e){ console.log("Start error:", e); }
+        try{ srRef.current.start(); } catch(e){ console.log("SR start error:", e); }
       }
-    }, 100);
+    }, 150);
 
+    // Timer & AI interval
     tmRef.current = setInterval(function(){ setTime(function(t){ return t+1; }); }, 1000);
     aiTmRef.current = setInterval(function(){ triggerAI(); }, set.interval * 60000);
+
+    // Try to setup audio visualizer (optional, won't block recording)
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+        msRef.current = stream;
+        var ac = new (window.AudioContext||window.webkitAudioContext)();
+        acRef.current = ac;
+        var src = ac.createMediaStreamSource(stream);
+        var an = ac.createAnalyser();
+        an.fftSize = 2048; an.smoothingTimeConstant = 0.8;
+        src.connect(an);
+        setAn(an);
+      }).catch(function(e){
+        // Visualizer won't work but SR still runs
+        console.log("Audio visualizer unavailable:", e.message);
+      });
+    }
   }
 
   /* ── Stop Recording ── */
@@ -448,11 +455,14 @@ function RecTab(p){
       <!-- REQUIREMENTS -->
       ${!isRec && time===0 ? h`<div style=${{marginTop:10,padding:12,borderRadius:14,background:"rgba(0,0,0,0.02)",border:"1px solid rgba(0,0,0,0.04)"}}>
         <div style=${{fontSize:10,fontWeight:600,color:"#8E8E93",marginBottom:4}}>Persyaratan</div>
-        <div style=${{fontSize:11,color:"#636366",lineHeight:1.6}}>
+        <div style=${{fontSize:11,color:"#636366",lineHeight:1.8}}>
           • Chrome atau Edge (desktop/mobile)
           • Koneksi internet (SR via server Google)
           • Izinkan akses mikrofon saat diminta
           • API Key Groq (gratis) untuk ringkasan AI
+        </div>
+        <div style=${{fontSize:10,color:"#C7C7CC",marginTop:8,lineHeight:1.6}}>
+          Jika izin mikrofon ditolak: klik ikon gembok di address bar → Site settings → Microphone → Allow → refresh.
         </div>
       </div>` : null}
     </div>
