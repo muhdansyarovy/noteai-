@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Notulen AI — Smart Meeting Notes</title>
+<title>Notulen AI — Modern iOS Notes</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23BF5AF2'/%3E%3Cstop offset='100%25' stop-color='%235856D6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23a)'/%3E%3Cpath d='M40 30h20v20H40V30zm25 35h-30v10h30v-10z' fill='%23FFF'/%3E%3Ccircle cx='35' cy='75' r='8' fill='%23FFF'/%3E%3Ccircle cx='65' cy='75' r='8' fill='%23FFF'/%3E%3Ccircle cx='50' cy='20' r='10' fill='%23FFF'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23BF5AF2'/%3E%3Cstop offset='100%25' stop-color='%235856D6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23a)'/%3E%3Cpath d='M40 30h20v20H40V30zm25 35h-30v10h30v-10z' fill='%23FFF'/%3E%3Ccircle cx='35' cy='75' r='8' fill='%23FFF'/%3E%3Ccircle cx='65' cy='75' r='8' fill='%23FFF'/%3E%3Ccircle cx='50' cy='20' r='10' fill='%23FFF'/%3E%3C/svg%3E">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
@@ -75,11 +79,11 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 <script>
 var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
 
-/* ═══ STORAGE (v13) ═══ */
+/* ═══ STORAGE (v14) ═══ */
 var DB={
-  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v13")||"null")||this.def()}catch(e){return this.def()}},
+  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v14")||"null")||this.def()}catch(e){return this.def()}},
   def:function(){return{history:[],set:{lang:"id-ID",key:"",provider:"groq", chunk: 30}}},
-  save:function(d){localStorage.setItem("notulen_v13",JSON.stringify(d))},
+  save:function(d){localStorage.setItem("notulen_v14",JSON.stringify(d))},
   addHist:function(r){var d=this.get();d.history.unshift(r);if(d.history.length>50)d.history.length=50;this.save(d)},
   delHist:function(id){var d=this.get();d.history=d.history.filter(function(x){return x.id!==id});this.save(d)},
   getSet:function(){return this.get().set},
@@ -118,13 +122,14 @@ function FmtText(p) {
            <span style=${{flex:1, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${content}</span>
          </div>`;
       } else {
+         // Jika bukan list, anggap sebagai sub-judul / paragraf biasa
          return h`<div key=${i} style=${{marginBottom:12, marginTop:4, lineHeight:1.6, color:"#1C1C1E", fontWeight:700}}>${str}</div>`;
       }
     })}
   </div>`;
 }
 
-/* ═══ ICON ═══ */
+/* ═══ ICON LIBRARY (iOS 26 / SF Symbol Style) ═══ */
 function Ic(p){
   var s=p.size||20,c=p.color||"currentColor",paths={
     mic:"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4 M8 23h8",
@@ -133,7 +138,14 @@ function Ic(p){
     settings:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z",
     trash:"M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6",
     sparkle:"M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z",
-    clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2", layers:"M12 2L2 7l10 5 10-5-10-5z M2 12l10 5 10-5 M2 17l10 5 10-5"
+    clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2", layers:"M12 2L2 7l10 5 10-5-10-5z M2 12l10 5 10-5 M2 17l10 5 10-5",
+    
+    // NEW: iOS Style Icons for Formatting Menu
+    briefcase: "M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM9 5h6v2H9V5zm11 14H4V9h16v10z M13 12h5 M14 15h4 M16 18h2",
+    listcheck: "M3 12h.01M3 6h.01M3 18h.01M10 6h11M10 12h11M10 18h11M7 6l1.2 1.2M7 12l1.2 1.2M7 18l1.2 1.2",
+    seal: "M12 2l2.4 2.4.6-.2 2.6 2.6-.2.6 2.4 2.4-2.4 2.4.2.6-2.6 2.6-.6-.2L12 22l-2.4-2.4-.6.2-2.6-2.6.2-.6-2.4-2.4 2.4-2.4-.2-.6 2.6-2.6.6.2L12 2zm0 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M11.5 10h1v4h-1z",
+    bulb: "M9 18h6a1 1 0 0 0 1-1v-2a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v2a1 1 0 0 0 1 1zm0-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1 M10.5 7h3 M12 5V2",
+    speechdots: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z M8 9h.01M12 9h.01M16 9h.01"
   };
   return h`<svg width=${s} height=${s} viewBox="0 0 24 24" fill="none" stroke=${c} strokeWidth=${p.sw||2.5} strokeLinecap="round" strokeLinejoin="round"><path d=${paths[p.name]||"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"}/></svg>`;
 }
@@ -246,7 +258,7 @@ function RecTab(p){
       var finalRaw = finRef.current.map(function(x){return "[Menit "+fmt(x.time)+"] "+x.text}).join("\n\n");
       var finalSumChunk = notesRef.current.map(function(x){return "[Menit "+fmt(x.time)+"]\n"+x.text}).join("\n\n");
 
-      // Set default output (Bisa diganti nanti di Riwayat)
+      // Default selalu Eksekutif, nanti pengguna bisa ubah di tab Riwayat
       aiSummarizeOverall(finalRaw, set.lang, window.__AK, "executive")
         .then(function(overallSum){
           DB.addHist({
@@ -337,7 +349,6 @@ function RecTab(p){
       <p style=${{fontSize:13,color:"#8E8E93",marginTop:8,fontWeight:500}}>Transkripsi Real-time & Multi Format</p>
     </div>
 
-    <!-- STATUS CARD -->
     <div className="gl" style=${{padding:24,textAlign:"center",marginBottom:24,position:"relative"}}>
       <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:isRec?"rgba(255,69,58,0.12)":"rgba(88,86,214,0.1)",color:isRec?"#FF453A":"#5856D6",animation:isRec?"ripple 2s infinite":"none",marginBottom:16,boxShadow:isRec?"0 0 20px rgba(255,69,58,0.2)":""}}>
         <${Ic} name=${isRec?"mic":"play"} size=${40}/>
@@ -372,7 +383,6 @@ function RecTab(p){
       </div>
     </div>
 
-    <!-- QUICK SETTINGS -->
     ${!isRec && time===0 && !saving ? h`<div className="gl" style=${{padding:16,marginBottom:24}}>
       <div style=${{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
          <div style=${{display:"flex",alignItems:"center",gap:8}}>
@@ -406,7 +416,6 @@ function RecTab(p){
       </div>
     </div>` : null}
 
-    <!-- LIVE TIMELINE UI -->
     ${(notes.length > 0 || fin.length > 0) ? h`<div>
       <div style=${{fontSize:13,fontWeight:800,color:"#1C1C1E",marginBottom:16,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase", borderBottom:"1px solid rgba(0,0,0,0.06)", paddingBottom:12}}><${Ic} name="sparkle" size=${16} color="#BF5AF2"/> Live Timeline</div>
       
@@ -441,21 +450,21 @@ function HistTab(){
   var _h=us(DB.get().history), hist=_h[0], setH=_h[1];
   var _open=us(null), openId=_open[0], setOpen=_open[1];
   
-  // Loading state saat ganti format
+  // State khusus saat sedang ganti format
   var _regen=us(null), regenId=_regen[0], setRegen=_regen[1];
 
   var formatOptions = [
-    { id:"executive", icon:"👔", label:"Eksekutif" },
-    { id:"action", icon:"✅", label:"Action Items" },
-    { id:"formal", icon:"📝", label:"Formal" },
-    { id:"casual", icon:"💡", label:"Santai" },
-    { id:"qna", icon:"❓", label:"Q&A" }
+    { id:"executive", icon:"briefcase", label:"Eksekutif" },
+    { id:"action", icon:"listcheck", label:"Action Items" },
+    { id:"formal", icon:"seal", label:"Formal" },
+    { id:"casual", icon:"bulb", label:"Santai" },
+    { id:"qna", icon:"speechdots", label:"Q&A" }
   ];
 
   ue(function(){ setH(DB.get().history); }, []);
   function del(id){if(confirm("Hapus notulen ini?")){DB.delHist(id); setH(DB.get().history);}}
   
-  // Proses Ganti Format
+  // Fungsi ganti format langsung di riwayat
   function changeFormat(item, formatType, formatLabel) {
     if(!window.__AK) { alert("API Key kosong!"); return; }
     setRegen(item.id);
@@ -500,28 +509,26 @@ function HistTab(){
         </div>
 
         ${isOpen ? h`<div style=${{padding:"0 16px 20px",animation:"fadeIn .3s"}}>
+          
           <div style=${{display:"flex",gap:8,marginBottom:20}}>
             <button onClick=${function(e){e.stopPropagation();del(item.id)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:12,background:"rgba(255,69,58,0.08)",color:"#FF453A",fontSize:12,fontWeight:700,border:"none"}}>
               <${Ic} name="trash" size=${14} color="#FF453A"/>Hapus
             </button>
           </div>
 
-          <!-- FORMAT SWITCHER UI -->
-          <div style=${{marginBottom: 20}}>
-            <div style=${{fontSize:11,fontWeight:800,color:"#8E8E93",marginBottom:8,letterSpacing:"0.5px"}}>UBAH GAYA RINGKASAN:</div>
-            <div className="hide-scroll" style=${{display:"flex", gap:8, overflowX:"auto", paddingBottom:4, WebkitOverflowScrolling:"touch"}}>
-              ${formatOptions.map(function(f){
-                // Cek apakah tombol ini adalah format yang sedang aktif
-                var isCurrent = item.formatType === f.id || (item.formatName === f.label) || (!item.formatType && f.id === 'executive');
-                return h`<button key=${f.id} onClick=${function(){ changeFormat(item, f.id, f.label) }} disabled=${regenId === item.id}
-                  style=${{flexShrink:0, display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:"100px", border:"1px solid "+(isCurrent?"rgba(191,90,242,0.4)":"rgba(0,0,0,0.06)"), background:isCurrent?"rgba(191,90,242,0.06)":"#FFF", color:isCurrent?"#BF5AF2":"#8E8E93", fontSize:12, fontWeight:700, transition:"0.2s"}}>
-                  <span>${f.icon}</span> <span>${f.label}</span>
-                </button>`
-              })}
-            </div>
+          <div style=${{fontSize:11,fontWeight:700,color:"#8E8E93",marginBottom:8}}>UBAH GAYA RINGKASAN:</div>
+          <div className="hide-scroll" style=${{display:"flex", gap:8, overflowX:"auto", paddingBottom:12, marginBottom:16, WebkitOverflowScrolling:"touch"}}>
+            ${formatOptions.map(function(f){
+              // Cek apakah tombol ini adalah format yang sedang aktif
+              var isCurrent = item.formatType === f.id || (item.formatName === f.label);
+              return h`<button key=${f.id} onClick=${function(){ changeFormat(item, f.id, f.label) }} disabled=${regenId === item.id}
+                style=${{flexShrink:0, display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:"100px", border:"1px solid "+(isCurrent?"rgba(191,90,242,0.4)":"rgba(0,0,0,0.06)"), background:isCurrent?"rgba(191,90,242,0.06)":"#FFF", color:isCurrent?"#BF5AF2":"#8E8E93", fontSize:12, fontWeight:700, transition:"0.2s"}}>
+                <${Ic} name=${f.icon} size=${14} color=${isCurrent?"#BF5AF2":"#8E8E93"}/>
+                <span>${f.label}</span>
+              </button>`
+            })}
           </div>
 
-          <!-- FINAL SUMMARY -->
           ${item.overall ? h`<div style=${{marginBottom:24}}>
             <div style=${{fontSize:12,fontWeight:800,color:"#BF5AF2",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
               <${Ic} name="sparkle" size=${16} color="#BF5AF2"/>${item.formatName || "Ringkasan Eksekutif"}
@@ -536,7 +543,6 @@ function HistTab(){
             </div>
           </div>` : null}
 
-          <!-- TIMELINE (CHUNK SUMMARY) -->
           ${item.notes ? h`<div style=${{marginBottom:24}}>
             <div style=${{fontSize:12,fontWeight:800,color:"#5856D6",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
               <${Ic} name="clock" size=${16} color="#5856D6"/>Timeline
@@ -546,7 +552,6 @@ function HistTab(){
             </div>
           </div>` : null}
 
-          <!-- RAW AUDIO -->
           <div>
             <div style=${{fontSize:12,fontWeight:800,color:"#8E8E93",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10}}>Transkrip Mentah</div>
             <div style=${{maxHeight:250,overflowY:"auto",background:"#FFF",borderRadius:16,padding:16,border:"1px solid rgba(0,0,0,0.06)",fontSize:13,lineHeight:1.6,color:"#636366",whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
@@ -605,7 +610,7 @@ function SetTab(p){
             </div>
          </div>
          <div style=${{display:"flex",gap:14}}>
-            <div style=${{width:28,height:28,borderRadius:14,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>3</div>
+            <div style=${{width:28,height:28,borderRadius:14,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"center",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>3</div>
             <div>
                <div style=${{fontSize:14,fontWeight:800,color:"#BF5AF2",marginBottom:4}}>Dynamic Formatting</div>
                <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>Buka tab Riwayat untuk merubah gaya ringkasan menjadi Action Items, Q&A, atau Format Santai.</div>
@@ -636,7 +641,6 @@ function App(){
       <div style=${{display: tab==="set" ? "block" : "none"}}><${SetTab} set=${settings} updSet=${updSet}/></div>
     </div>
 
-    <!-- DYNAMIC ISLAND NAVIGATION -->
     <div className="btab-container">
       <div className="btab" style=${{maxWidth: 320, width: "100%"}}>
         ${[["rec","mic","Rekam"],["hist","file","Riwayat"],["set","settings","Sistem"]].map(function(t){
