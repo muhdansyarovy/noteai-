@@ -54,17 +54,16 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 .fi:focus { border-color: rgba(88,86,214,0.4); background: #FFF; box-shadow: 0 0 0 4px rgba(88,86,214,0.1); }
 .card-note { background: #FFF; border-radius: 20px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
 .spinner { border: 3px solid rgba(88,86,214,0.2); border-top: 3px solid #5856D6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
-.exec-card { background: linear-gradient(135deg, rgba(191,90,242,0.06), rgba(88,86,214,0.06)); border: 1px solid rgba(191,90,242,0.2); }
+.exec-card { background: linear-gradient(135deg, rgba(191,90,242,0.04), rgba(88,86,214,0.04)); border: 1px solid rgba(191,90,242,0.15); }
 
 /* Timeline UI Base */
 .timeline-container { position: relative; padding-left: 24px; margin-top: 12px; }
 .timeline-line { position: absolute; left: 6px; top: 8px; bottom: 0; width: 2px; background: rgba(0,0,0,0.06); border-radius: 2px; }
 .timeline-dot { position: absolute; left: -23px; top: 16px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid #FFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.06); z-index: 2; }
 
-/* Format Buttons */
-.fmt-btn { display:flex; align-items:center; gap:12px; padding:16px; border-radius:16px; background:#FFF; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 8px rgba(0,0,0,0.02); text-align:left; width:100%; margin-bottom:10px; transition:0.2s; }
-.fmt-btn:active { transform:scale(0.98); background:rgba(88,86,214,0.05); border-color:rgba(88,86,214,0.2); }
-.fmt-btn-icon { font-size:24px; width:40px; height:40px; border-radius:12px; background:rgba(0,0,0,0.03); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+/* Hide Scrollbar for Horizontal List */
+.hide-scroll::-webkit-scrollbar { display: none; }
+.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -76,11 +75,11 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 <script>
 var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
 
-/* ═══ STORAGE (v11) ═══ */
+/* ═══ STORAGE (v13) ═══ */
 var DB={
-  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v11")||"null")||this.def()}catch(e){return this.def()}},
+  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v13")||"null")||this.def()}catch(e){return this.def()}},
   def:function(){return{history:[],set:{lang:"id-ID",key:"",provider:"groq", chunk: 30}}},
-  save:function(d){localStorage.setItem("notulen_v11",JSON.stringify(d))},
+  save:function(d){localStorage.setItem("notulen_v13",JSON.stringify(d))},
   addHist:function(r){var d=this.get();d.history.unshift(r);if(d.history.length>50)d.history.length=50;this.save(d)},
   delHist:function(id){var d=this.get();d.history=d.history.filter(function(x){return x.id!==id});this.save(d)},
   getSet:function(){return this.get().set},
@@ -91,11 +90,12 @@ var DB={
 function cleanMD(str) {
   if(!str) return "";
   return str
-    .replace(/\*\*(.*?)\*\*/g, '$1') // Hapus Bold
-    .replace(/\*(.*?)\*/g, '$1')     // Hapus Italic
-    .replace(/^[-*]\s+/gm, '• ')     // Ubah list dash/bintang jadi bullet bulat
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Hapus Bold wrapper
+    .replace(/\*\*/g, '')            // Hapus sisa bintang ganda
+    .replace(/\*(.*?)\*/g, '$1')     // Hapus Italic wrapper
+    .replace(/^\s*[-*]\s+/gm, '• ')  // Ubah list strip/bintang jadi bullet bulat
     .replace(/#{1,6}\s?/g, '')       // Hapus heading #
-    .replace(/^(Berikut|Ini adalah|Ringkasan|Tentu).*\n/gmi, '') // Hapus kalimat pembuka
+    .replace(/^(Berikut|Ini adalah|Ringkasan|Tentu).*\n/gmi, '') // Hapus kalimat basa-basi AI
     .trim();
 }
 
@@ -110,14 +110,15 @@ function FmtText(p) {
       var isList = str.startsWith('•') || str.startsWith('-') || /^\d+\./.test(str);
       
       if(isList) {
-         var marker = str.match(/^([•-]|\d+\.)/)[0];
+         var markerMatch = str.match(/^([•-]\s*|\d+\.\s*)/);
+         var marker = markerMatch ? markerMatch[0] : "• ";
          var content = str.substring(marker.length).trim();
-         return h`<div key=${i} style=${{display:"flex", gap:10, marginBottom:8, alignItems:"flex-start"}}>
-           <span style=${{color:p.color||"#BF5AF2", fontWeight:800, minWidth:16, textAlign:"right"}}>${marker.replace('-','•')}</span>
+         return h`<div key=${i} style=${{display:"flex", gap:10, marginBottom:10, alignItems:"flex-start"}}>
+           <span style=${{color:p.color||"#BF5AF2", fontWeight:800, minWidth:18, flexShrink:0, textAlign:"right"}}>${marker.replace('-','•').trim()}</span>
            <span style=${{flex:1, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${content}</span>
          </div>`;
       } else {
-         return h`<div key=${i} style=${{marginBottom:10, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${str}</div>`;
+         return h`<div key=${i} style=${{marginBottom:12, marginTop:4, lineHeight:1.6, color:"#1C1C1E", fontWeight:700}}>${str}</div>`;
       }
     })}
   </div>`;
@@ -131,10 +132,7 @@ function Ic(p){
     file:"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8",
     settings:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z",
     trash:"M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6",
-    key:"M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4",
     sparkle:"M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z",
-    alert:"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01",
-    text:"M4 7V4h16v3 M9 20h6 M12 4v16", bot:"M12 8V4 M8 4h8 M2 14h2 M20 14h2 M15 13v2 M9 13v2 M4 8h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z",
     clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2", layers:"M12 2L2 7l10 5 10-5-10-5z M2 12l10 5 10-5 M2 17l10 5 10-5"
   };
   return h`<svg width=${s} height=${s} viewBox="0 0 24 24" fill="none" stroke=${c} strokeWidth=${p.sw||2.5} strokeLinecap="round" strokeLinejoin="round"><path d=${paths[p.name]||"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"}/></svg>`;
@@ -158,11 +156,11 @@ function transcribeAudio(audioBlob, lang, key){
 function aiSummarizeChunk(text, lang, key){
   return new Promise(function(resolve, reject){
     var prompt = lang==="id-ID"
-      ? "Buat ringkasan maksimal 2 poin dari transkrip 30 detik ini. PENTING: Jangan gunakan format markdown (tanpa bintang, tanpa bold). Gunakan list biasa.\n\nTranskrip:\n" + text
-      : "Extract max 2 key bullet points. IMPORTANT: Plain text only, absolutely NO markdown asterisks.\n\nTranscript:\n" + text;
+      ? "Buat ringkasan maks 2 poin. ATURAN: Hanya hasilkan poin (mulai dengan •). DILARANG menulis kalimat pengantar. DILARANG menggunakan format markdown (tanpa bintang/bold).\n\nTranskrip:\n" + text
+      : "Extract max 2 points. RULES: Only bullets (start with •). NO intro. NO markdown asterisks.\n\nTranscript:\n" + text;
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You output clean plain text only. Start with •."},{role:"user",content:prompt}], temperature: 0.2, max_tokens: 300 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You output plain bullet points only."},{role:"user",content:prompt}], temperature: 0.2, max_tokens: 300 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
@@ -170,21 +168,20 @@ function aiSummarizeChunk(text, lang, key){
 
 function aiSummarizeOverall(text, lang, key, formatType){
   return new Promise(function(resolve, reject){
-    // Tentukan Prompt berdasarkan Pilihan Format
     var prompts = {
-      executive: lang==="id-ID" ? "Buat Ringkasan Eksekutif komprehensif. Susun: 1. Topik Utama, 2. Keputusan, 3. Tindak Lanjut." : "Create an Executive Summary: 1. Main Topics, 2. Decisions, 3. Action Items.",
-      action: lang==="id-ID" ? "Buat daftar Action Items (Tugas & Penanggung Jawab) dari rapat ini. Abaikan obrolan basa-basi." : "List Action Items (Tasks & PICs) only.",
-      formal: lang==="id-ID" ? "Buat Notulen Rapat Formal bergaya baku. Susun: Pembukaan, Isi Diskusi Utama, dan Kesimpulan." : "Create Formal Meeting Minutes: Opening, Main Discussion, Conclusion.",
-      casual: lang==="id-ID" ? "Buat ringkasan poin-poin penting dengan gaya bahasa santai dan to-the-point." : "Create a casual, to-the-point summary of key points.",
-      qna: lang==="id-ID" ? "Ubah isi diskusi ini menjadi format Q&A (Tanya - Jawab) berdasarkan masalah dan solusinya." : "Format the discussion into a Q&A (Question & Answer) style."
+      executive: lang==="id-ID" ? "Buat Ringkasan Eksekutif. Susun: 1. Topik Utama, 2. Keputusan, 3. Tindak Lanjut." : "Create Executive Summary: 1. Main Topics, 2. Decisions, 3. Action Items.",
+      action: lang==="id-ID" ? "Buat daftar Action Items (Tugas & Penanggung Jawab) dari rapat ini. Jika tidak ada, tuliskan tidak ada tugas khusus." : "List Action Items (Tasks & PICs).",
+      formal: lang==="id-ID" ? "Buat Notulen Rapat Formal. Susun: Pembukaan, Isi Diskusi, dan Kesimpulan." : "Create Formal Minutes: Opening, Discussion, Conclusion.",
+      casual: lang==="id-ID" ? "Buat ringkasan poin-poin penting dengan gaya bahasa santai dan to-the-point." : "Create a casual, to-the-point summary.",
+      qna: lang==="id-ID" ? "Ubah isi diskusi menjadi format Q&A (Tanya - Jawab)." : "Format the discussion into a Q&A style."
     };
     
     var basePrompt = prompts[formatType] || prompts.executive;
-    var finalPrompt = basePrompt + "\n\nATURAN KETAT: Dilarang keras menggunakan format markdown (tanpa bintang/bold). Gunakan list biasa (angka atau bullet).\n\nTranskrip:\n" + text;
+    var finalPrompt = basePrompt + "\n\nATURAN KETAT: Dilarang keras menggunakan format markdown (tanpa bintang **). Gunakan list angka biasa atau bullet bulat.\n\nTranskrip:\n" + text;
 
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: {"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are a strict secretary. You ONLY output clean plain text, no markdown syntax allowed."},{role:"user",content:finalPrompt}], temperature: 0.3, max_tokens: 1500 })
+      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"system",content:"You are a strict secretary. You ONLY output clean plain text, absolutely no markdown syntax."},{role:"user",content:finalPrompt}], temperature: 0.3, max_tokens: 1500 })
     }).then(function(r){return r.json()}).then(function(d){ if(d.error) throw new Error(d.error.message); resolve(d.choices[0].message.content); })
       .catch(function(e){reject(e.message||e)});
   });
@@ -218,36 +215,52 @@ function LevelMeter(p){
 }
 
 /* ═══════════════════════════════════════
-   TAB: REKAM (NEW PHASE ARCHITECTURE)
+   TAB: REKAM 
    ═══════════════════════════════════════ */
 function RecTab(p){
   var set = p.set, updSet = p.updSet, onSaveComplete = p.onSaveComplete;
-  
-  // Phase: "idle" | "recording" | "syncing" | "formatting" | "generating"
-  var _phase=us("idle"), phase=_phase[0], setPhase=_phase[1];
-  
+  var _isRec=us(false), isRec=_isRec[0], setRec=_isRec[1];
   var _time=us(0), time=_time[0], setTime=_time[1];
   var _title=us(""), title=_title[0], setTitle=_title[1];
   var _an=us(null), analyser=_an[0], setAn=_an[1];
+  
   var _fin=us([]), fin=_fin[0], setFin=_fin[1];
   var _notes=us([]), notes=_notes[0], setNotes=_notes[1];
+  var _saving=us(false), saving=_saving[0], setSaving=_saving[1];
   var _status=us(""), statusMsg=_status[0], setStatusMsg=_status[1];
 
-  var phaseRef = ur("idle"), timeRef = ur(0), pendingReqs = ur(0);
+  var isRecRef = ur(false), isFinalizingRef = ur(false);
+  var timeRef = ur(0), pendingReqs = ur(0);
   var streamRef = ur(null), acRef = ur(null), mrRef = ur(null);
   var loopIntervalRef = ur(null), clockIntervalRef = ur(null);
   var finRef = ur([]), notesRef = ur([]), titleRef = ur("");
 
-  function updatePhase(newPhase) { setPhase(newPhase); phaseRef.current = newPhase; }
   function addFin(data){ setFin(function(p){ var n=p.concat([data]); finRef.current=n; return n; }); }
   function addNote(data){ setNotes(function(p){ var n=p.concat([data]); notesRef.current=n; return n; }); }
 
-  /* ── Langkah Transisi ── */
-  function checkSyncComplete() {
-    if (phaseRef.current === "syncing" && pendingReqs.current === 0) {
-      if (finRef.current.length === 0) { resetAll(); return; }
-      // Transkrip sudah kumpul semua, saatnya masuk ke Menu Pilihan Format
-      updatePhase("formatting");
+  function autoSaveIfDone() {
+    if (!isRecRef.current && pendingReqs.current === 0 && !isFinalizingRef.current) {
+      if (finRef.current.length === 0) { setSaving(false); return; }
+      isFinalizingRef.current = true; setStatusMsg("Menyiapkan Notulen...");
+      
+      var finalRaw = finRef.current.map(function(x){return "[Menit "+fmt(x.time)+"] "+x.text}).join("\n\n");
+      var finalSumChunk = notesRef.current.map(function(x){return "[Menit "+fmt(x.time)+"]\n"+x.text}).join("\n\n");
+
+      // Set default output (Bisa diganti nanti di Riwayat)
+      aiSummarizeOverall(finalRaw, set.lang, window.__AK, "executive")
+        .then(function(overallSum){
+          DB.addHist({
+            id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current,
+            title: titleRef.current || ("Rapat " + new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})),
+            transcript: finalRaw, notes: cleanMD(finalSumChunk), overall: cleanMD(overallSum), formatType: "executive", formatName: "Ringkasan Eksekutif"
+          });
+          setSaving(false); onSaveComplete(); resetAll();
+        })
+        .catch(function(err){
+          alert("Gagal AI: " + err.message + "\n(Menyimpan parsial)");
+          DB.addHist({ id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current, title: titleRef.current, transcript: finalRaw, notes: cleanMD(finalSumChunk), overall: "Gagal memproses.", formatType: "executive", formatName: "Ringkasan Eksekutif" });
+          setSaving(false); onSaveComplete(); resetAll();
+        });
     }
   }
 
@@ -262,14 +275,14 @@ function RecTab(p){
         aiSummarizeChunk(cleanedText, set.lang, window.__AK)
           .then(function(summary){ addNote({time: startTime, text: cleanMD(summary), id: Date.now()}); })
           .catch(function(err){ console.log("AI Chunk Err:", err); })
-          .finally(function(){ pendingReqs.current--; checkSyncComplete(); });
+          .finally(function(){ pendingReqs.current--; autoSaveIfDone(); });
       })
       .catch(function(err){ console.log("Whisper Err:", err); })
-      .finally(function(){ pendingReqs.current--; checkSyncComplete(); });
+      .finally(function(){ pendingReqs.current--; autoSaveIfDone(); });
   }
 
   function startRecordingCycle(stream) {
-    if(phaseRef.current !== "recording") return;
+    if(!isRecRef.current) return;
     var mr = new MediaRecorder(stream);
     var localChunks = []; var startTime = timeRef.current;
     mr.ondataavailable = function(e){ if(e.data.size > 0) localChunks.push(e.data); };
@@ -280,7 +293,7 @@ function RecTab(p){
   function startRec(){
     if(!window.__AK){ alert("Isi API Key Groq di Pengaturan."); return; }
     if(!navigator.mediaDevices){ alert("Browser tidak mendukung mic."); return; }
-    resetAll(); updatePhase("recording"); titleRef.current = title;
+    resetAll(); isRecRef.current = true; setRec(true); titleRef.current = title;
 
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
       streamRef.current = stream;
@@ -293,7 +306,7 @@ function RecTab(p){
       
       var cDur = (set.chunk || 30) * 1000;
       loopIntervalRef.current = setInterval(function(){
-        if(phaseRef.current === "recording" && mrRef.current && mrRef.current.state === "recording"){
+        if(isRecRef.current && mrRef.current && mrRef.current.state === "recording"){
           mrRef.current.stop(); setTimeout(function(){ startRecordingCycle(streamRef.current); }, 50);
         }
       }, cDur);
@@ -301,43 +314,18 @@ function RecTab(p){
   }
 
   function stopRec(){
-    updatePhase("syncing"); setStatusMsg("Menyatukan Transkrip...");
+    isRecRef.current = false; setRec(false); setSaving(true); setStatusMsg("Menyatukan Transkrip...");
     clearInterval(clockIntervalRef.current); clearInterval(loopIntervalRef.current);
     if(mrRef.current && mrRef.current.state === "recording") { mrRef.current.stop(); }
     if(streamRef.current){streamRef.current.getTracks().forEach(function(t){t.stop()}); streamRef.current=null;}
     if(acRef.current&&acRef.current.state!=="closed"){acRef.current.close();} setAn(null);
-    setTimeout(checkSyncComplete, 500);
-  }
-
-  /* ── Pembuatan Summary Berdasarkan Format (Langkah Akhir) ── */
-  function executeFinalSummary(formatType, formatName) {
-    updatePhase("generating");
-    setStatusMsg("Menyusun " + formatName + "...");
-    
-    var finalRaw = finRef.current.map(function(x){return "[Menit "+fmt(x.time)+"] "+x.text}).join("\n\n");
-    var finalSumChunk = notesRef.current.map(function(x){return "[Menit "+fmt(x.time)+"]\n"+x.text}).join("\n\n");
-
-    aiSummarizeOverall(finalRaw, set.lang, window.__AK, formatType)
-      .then(function(overallSum){
-        DB.addHist({
-          id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current,
-          title: titleRef.current || ("Rapat " + new Date().toLocaleDateString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})),
-          transcript: finalRaw, notes: cleanMD(finalSumChunk), 
-          overall: cleanMD(overallSum), formatName: formatName
-        });
-        onSaveComplete(); resetAll();
-      })
-      .catch(function(err){
-        alert("Gagal AI: " + err.message + "\n(Menyimpan parsial)");
-        DB.addHist({ id: Date.now().toString(), date: new Date().toISOString(), duration: timeRef.current, title: titleRef.current, transcript: finalRaw, notes: cleanMD(finalSumChunk), overall: "Gagal memproses.", formatName: formatName });
-        onSaveComplete(); resetAll();
-      });
+    setTimeout(autoSaveIfDone, 500);
   }
 
   function resetAll(){
-    setFin([]); setNotes([]); setTime(0); setTitle(""); setStatusMsg("");
+    setFin([]); setNotes([]); setTime(0); setTitle(""); setSaving(false); setStatusMsg("");
     finRef.current = []; notesRef.current = []; timeRef.current = 0; titleRef.current = "";
-    pendingReqs.current = 0; updatePhase("idle");
+    pendingReqs.current = 0; isRecRef.current = false; isFinalizingRef.current = false; setRec(false);
   }
 
   return h`<div style=${{maxWidth:500, margin:"0 auto", padding:"32px 16px 20px"}}>
@@ -349,93 +337,51 @@ function RecTab(p){
       <p style=${{fontSize:13,color:"#8E8E93",marginTop:8,fontWeight:500}}>Transkripsi Real-time & Multi Format</p>
     </div>
 
-    <!-- UI: FORMAT SELECTION (Pilih Gaya Bahasa) -->
-    ${phase === "formatting" ? h`<div className="gl" style=${{padding:"24px", animation:"slideUp 0.3s ease-out"}}>
-       <h2 style=${{fontSize:20, fontWeight:800, marginBottom:8, textAlign:"center"}}>Pilih Format Ringkasan</h2>
-       <p style=${{fontSize:13, color:"#8E8E93", textAlign:"center", marginBottom:20}}>Transkrip berhasil dikumpulkan. Bagaimana Anda ingin AI menyajikan hasilnya?</p>
-       
-       <button className="fmt-btn" onClick=${function(){executeFinalSummary("executive", "Ringkasan Eksekutif")}}>
-         <div className="fmt-btn-icon">👔</div>
-         <div>
-           <div style=${{fontWeight:800, fontSize:15, color:"#1C1C1E"}}>Eksekutif</div>
-           <div style=${{fontSize:12, color:"#8E8E93", marginTop:2}}>Topik Utama, Keputusan, Tindak Lanjut</div>
-         </div>
-       </button>
-       
-       <button className="fmt-btn" onClick=${function(){executeFinalSummary("action", "Action Items")}}>
-         <div className="fmt-btn-icon">✅</div>
-         <div>
-           <div style=${{fontWeight:800, fontSize:15, color:"#1C1C1E"}}>Action Items</div>
-           <div style=${{fontSize:12, color:"#8E8E93", marginTop:2}}>Fokus daftar tugas & Penanggung Jawab</div>
-         </div>
-       </button>
-       
-       <button className="fmt-btn" onClick=${function(){executeFinalSummary("formal", "Notulen Formal")}}>
-         <div className="fmt-btn-icon">📝</div>
-         <div>
-           <div style=${{fontWeight:800, fontSize:15, color:"#1C1C1E"}}>Notulen Formal</div>
-           <div style=${{fontSize:12, color:"#8E8E93", marginTop:2}}>Gaya bahasa baku (Pembukaan, Isi, Penutup)</div>
-         </div>
-       </button>
-
-       <button className="fmt-btn" onClick=${function(){executeFinalSummary("casual", "Poin Santai")}}>
-         <div className="fmt-btn-icon">💡</div>
-         <div>
-           <div style=${{fontWeight:800, fontSize:15, color:"#1C1C1E"}}>Poin Santai</div>
-           <div style=${{fontSize:12, color:"#8E8E93", marginTop:2}}>Ringkasan kasual, padat, dan to-the-point</div>
-         </div>
-       </button>
-
-       <button className="fmt-btn" onClick=${function(){executeFinalSummary("qna", "Format Q&A")}}>
-         <div className="fmt-btn-icon">❓</div>
-         <div>
-           <div style=${{fontWeight:800, fontSize:15, color:"#1C1C1E"}}>Format Q&A</div>
-           <div style=${{fontSize:12, color:"#8E8E93", marginTop:2}}>Disusun berupa Tanya - Jawab dari diskusi</div>
-         </div>
-       </button>
-    </div>` : null}
-
-    <!-- UI: STATUS RECORDING & LOADING -->
-    ${(phase !== "formatting") ? h`<div className="gl" style=${{padding:24,textAlign:"center",marginBottom:24,position:"relative"}}>
-      <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:phase==="recording"?"rgba(255,69,58,0.12)":"rgba(88,86,214,0.1)",color:phase==="recording"?"#FF453A":"#5856D6",animation:phase==="recording"?"ripple 2s infinite":"none",marginBottom:16}}>
-        <${Ic} name=${phase==="recording"?"mic":"play"} size=${40}/>
+    <!-- STATUS CARD -->
+    <div className="gl" style=${{padding:24,textAlign:"center",marginBottom:24,position:"relative"}}>
+      <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:isRec?"rgba(255,69,58,0.12)":"rgba(88,86,214,0.1)",color:isRec?"#FF453A":"#5856D6",animation:isRec?"ripple 2s infinite":"none",marginBottom:16,boxShadow:isRec?"0 0 20px rgba(255,69,58,0.2)":""}}>
+        <${Ic} name=${isRec?"mic":"play"} size=${40}/>
       </div>
 
-      <div style=${{fontSize:36,fontWeight:800,fontFamily:"'SF Mono',monospace",letterSpacing:-1.5,color:phase==="recording"?"#FF453A":"#1C1C1E",marginBottom:8}}>
+      <div style=${{fontSize:36,fontWeight:800,fontFamily:"'SF Mono',monospace",letterSpacing:-1.5,color:isRec?"#FF453A":"#1C1C1E",marginBottom:8}}>
         ${fmt(time)}
       </div>
 
-      ${phase==="recording" ? h`<div className="pill" style=${{background:"rgba(50,215,75,0.15)",color:"#32D74B",marginBottom:12}}>
+      ${isRec && h`<div className="pill" style=${{background:"rgba(50,215,75,0.15)",color:"#32D74B",marginBottom:12}}>
         <div style=${{width:6,height:6,borderRadius:3,background:"#32D74B",animation:"pulse 1.2s infinite"}}/> Sedang Merekam...
-      </div>` : null}
+      </div>`}
 
-      ${(phase==="syncing" || phase==="generating") ? h`<div className="pill" style=${{background:"rgba(191,90,242,0.15)",color:"#BF5AF2",marginBottom:12}}>
+      ${saving && h`<div className="pill" style=${{background:"rgba(191,90,242,0.15)",color:"#BF5AF2",marginBottom:12}}>
         <div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:"#BF5AF2",width:12,height:12,borderWidth:2}}></div> ${statusMsg}
-      </div>` : null}
+      </div>`}
 
-      ${phase==="recording" && analyser ? h`<div style=${{marginBottom:16,padding:"0 8px"}}><${LevelMeter} an=${analyser}/></div>` : null}
+      ${isRec && analyser ? h`<div style=${{marginBottom:16,padding:"0 8px"}}><${LevelMeter} an=${analyser}/></div>` : null}
 
-      ${phase==="idle" ? h`<div style=${{marginBottom:16}}>
+      ${!isRec && time===0 && !saving && h`<div style=${{marginBottom:16}}>
         <input class="fi" value=${title} onInput=${function(e){setTitle(e.target.value)}} placeholder="Ketik Judul Rapat (opsional)" style=${{textAlign:"center",fontWeight:600}}/>
-      </div>` : null}
+      </div>`}
 
       <div style=${{display:"flex",gap:12}}>
-        ${phase==="idle" ? h`<button onClick=${startRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"linear-gradient(135deg,#5856D6,#7B79E8)",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(88,86,214,0.3)"}}>
+        ${!isRec && time===0 && !saving ? h`<button onClick=${startRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"linear-gradient(135deg,#5856D6,#7B79E8)",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(88,86,214,0.3)"}}>
           <span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name="mic" size=${18} color="#FFF"/>Mulai Rapat</span>
         </button>` : null}
 
-        ${phase==="recording" ? h`<button onClick=${stopRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"#FF453A",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(255,69,58,0.3)"}}>
+        ${isRec ? h`<button onClick=${stopRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"#FF453A",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(255,69,58,0.3)"}}>
           <span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name="stop" size=${18} color="#FFF"/>Akhiri Rapat</span>
         </button>` : null}
       </div>
-    </div>` : null}
+    </div>
 
-    <!-- UI: QUICK SETTINGS -->
-    ${phase==="idle" ? h`<div className="gl" style=${{padding:16,marginBottom:24}}>
+    <!-- QUICK SETTINGS -->
+    ${!isRec && time===0 && !saving ? h`<div className="gl" style=${{padding:16,marginBottom:24}}>
       <div style=${{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
          <div style=${{display:"flex",alignItems:"center",gap:8}}>
            <div style=${{width:28,height:28,borderRadius:10,background:"rgba(191,90,242,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#BF5AF2"}}><${Ic} name="settings" size=${16}/></div>
            <span style=${{fontWeight:700,fontSize:14}}>Pengaturan Cepat</span>
+         </div>
+         <div style=${{display:"flex",alignItems:"center",gap:6,fontSize:11,fontWeight:600,color:window.__AK?"#32D74B":"#FF453A"}}>
+           <div style=${{width:8,height:8,borderRadius:4,background:window.__AK?"#32D74B":"#FF453A"}}></div>
+           ${window.__AK ? "API Aktif" : "API Kosong"}
          </div>
       </div>
       <div style=${{display:"flex",gap:12}}>
@@ -460,12 +406,14 @@ function RecTab(p){
       </div>
     </div>` : null}
 
-    <!-- UI: LIVE TIMELINE -->
-    ${(phase==="recording" || phase==="syncing") && (notes.length > 0 || fin.length > 0) ? h`<div>
+    <!-- LIVE TIMELINE UI -->
+    ${(notes.length > 0 || fin.length > 0) ? h`<div>
       <div style=${{fontSize:13,fontWeight:800,color:"#1C1C1E",marginBottom:16,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase", borderBottom:"1px solid rgba(0,0,0,0.06)", paddingBottom:12}}><${Ic} name="sparkle" size=${16} color="#BF5AF2"/> Live Timeline</div>
       
       <div className="timeline-container">
         <div className="timeline-line"></div>
+        ${fin.length === 0 ? h`<div style=${{fontSize:13,color:"#8E8E93",fontStyle:"italic"}}>Mendengarkan percakapan...</div>` : null}
+        
         ${fin.map(function(f){
           var n = notes.find(function(item){ return item.time === f.time });
           return h`<div key=${f.id} style=${{position:"relative", marginBottom:24, animation:"fadeIn 0.4s ease-out"}}>
@@ -487,14 +435,45 @@ function RecTab(p){
 }
 
 /* ═══════════════════════
-   TAB: RIWAYAT
+   TAB: RIWAYAT & GANTI FORMAT
    ═══════════════════════ */
 function HistTab(){
   var _h=us(DB.get().history), hist=_h[0], setH=_h[1];
   var _open=us(null), openId=_open[0], setOpen=_open[1];
+  
+  // Loading state saat ganti format
+  var _regen=us(null), regenId=_regen[0], setRegen=_regen[1];
+
+  var formatOptions = [
+    { id:"executive", icon:"👔", label:"Eksekutif" },
+    { id:"action", icon:"✅", label:"Action Items" },
+    { id:"formal", icon:"📝", label:"Formal" },
+    { id:"casual", icon:"💡", label:"Santai" },
+    { id:"qna", icon:"❓", label:"Q&A" }
+  ];
 
   ue(function(){ setH(DB.get().history); }, []);
   function del(id){if(confirm("Hapus notulen ini?")){DB.delHist(id); setH(DB.get().history);}}
+  
+  // Proses Ganti Format
+  function changeFormat(item, formatType, formatLabel) {
+    if(!window.__AK) { alert("API Key kosong!"); return; }
+    setRegen(item.id);
+    aiSummarizeOverall(item.transcript, DB.getSet().lang, window.__AK, formatType)
+      .then(function(newSum){
+        var d = DB.get();
+        var idx = d.history.findIndex(function(x){return x.id === item.id});
+        if(idx > -1) {
+          d.history[idx].overall = cleanMD(newSum);
+          d.history[idx].formatType = formatType;
+          d.history[idx].formatName = formatLabel;
+          DB.save(d);
+          setH(d.history);
+        }
+      })
+      .catch(function(e){ alert("Gagal merubah format: "+e.message); })
+      .finally(function(){ setRegen(null); });
+  }
   
   if(!hist.length) return h`<div style=${{padding:"80px 20px",textAlign:"center"}}>
     <${Ic} name="file" size=${56} color="#C7C7CC" sw=${1.5}/>
@@ -527,13 +506,33 @@ function HistTab(){
             </button>
           </div>
 
+          <!-- FORMAT SWITCHER UI -->
+          <div style=${{marginBottom: 20}}>
+            <div style=${{fontSize:11,fontWeight:800,color:"#8E8E93",marginBottom:8,letterSpacing:"0.5px"}}>UBAH GAYA RINGKASAN:</div>
+            <div className="hide-scroll" style=${{display:"flex", gap:8, overflowX:"auto", paddingBottom:4, WebkitOverflowScrolling:"touch"}}>
+              ${formatOptions.map(function(f){
+                // Cek apakah tombol ini adalah format yang sedang aktif
+                var isCurrent = item.formatType === f.id || (item.formatName === f.label) || (!item.formatType && f.id === 'executive');
+                return h`<button key=${f.id} onClick=${function(){ changeFormat(item, f.id, f.label) }} disabled=${regenId === item.id}
+                  style=${{flexShrink:0, display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:"100px", border:"1px solid "+(isCurrent?"rgba(191,90,242,0.4)":"rgba(0,0,0,0.06)"), background:isCurrent?"rgba(191,90,242,0.06)":"#FFF", color:isCurrent?"#BF5AF2":"#8E8E93", fontSize:12, fontWeight:700, transition:"0.2s"}}>
+                  <span>${f.icon}</span> <span>${f.label}</span>
+                </button>`
+              })}
+            </div>
+          </div>
+
           <!-- FINAL SUMMARY -->
           ${item.overall ? h`<div style=${{marginBottom:24}}>
             <div style=${{fontSize:12,fontWeight:800,color:"#BF5AF2",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
-              <${Ic} name="sparkle" size=${16} color="#BF5AF2"/>${item.formatName || "Ringkasan Final"}
+              <${Ic} name="sparkle" size=${16} color="#BF5AF2"/>${item.formatName || "Ringkasan Eksekutif"}
             </div>
-            <div className="card-note exec-card" style=${{padding:"20px"}}>
-              <${FmtText} text=${item.overall} color="#BF5AF2"/>
+            
+            <div className="card-note exec-card" style=${{padding:"20px", position:"relative", minHeight:80}}>
+              ${regenId === item.id ? h`<div style=${{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"20px 0"}}>
+                 <div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:"#BF5AF2",width:20,height:20,borderWidth:3,marginBottom:12}}></div>
+                 <div style=${{fontSize:13,color:"#BF5AF2",fontWeight:700}}>Menyusun format baru...</div>
+              </div>` : 
+              h`<${FmtText} text=${item.overall} color="#BF5AF2"/>`}
             </div>
           </div>` : null}
 
@@ -608,13 +607,13 @@ function SetTab(p){
          <div style=${{display:"flex",gap:14}}>
             <div style=${{width:28,height:28,borderRadius:14,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>3</div>
             <div>
-               <div style=${{fontSize:14,fontWeight:800,color:"#BF5AF2",marginBottom:4}}>Custom Formatting</div>
-               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>User memilih gaya ringkasan (Eksekutif/Action/Q&A) dan LLM menyusun hasil akhirnya.</div>
+               <div style=${{fontSize:14,fontWeight:800,color:"#BF5AF2",marginBottom:4}}>Dynamic Formatting</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>Buka tab Riwayat untuk merubah gaya ringkasan menjadi Action Items, Q&A, atau Format Santai.</div>
             </div>
          </div>
       </div>
       <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",fontSize:11,color:"#C7C7CC",textAlign:"center",letterSpacing:"0.5px",fontWeight:600}}>
-        v11.0 · Multi-Format UI Build
+        v13.0 · History Format UI Fixed
       </div>
     </div>
   </div>`;
