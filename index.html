@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Notulen AI — Modern iOS Notes</title>
 
+<!-- ICON FIX: Memanggil file PNG fisik agar Safari Mac/iOS mau membacanya -->
 <link rel="apple-touch-icon" sizes="512x512" href="icon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon.png">
 
@@ -13,111 +14,58 @@
 <meta name="apple-mobile-web-app-title" content="Notulen AI">
 <style>
 :root {
-  /* DARK MODE SCHEME - Berdasarkan Referensi Gambar */
-  --bg: #0A0A0C; /* Solid background base */
-  --tx: #EBEBF5;  /* Primary Text (Hampir Putih) */
-  --txm: #A2A2A9; /* Secondary/Muted Text (Abu-abu Terang) */
-  
-  /* Glassmorph Background (Gelap Transparan) */
-  --gl: rgba(25,25,28,0.55); 
-  --gb: rgba(10,10,12,0.85); /* Slightly darker solid base */
-  
-  /* Glass border (Putih Tipis) */
-  --gl-border: rgba(255,255,255,0.12); 
-
-  /* Semantic Colors (Sesuai SF Symbol & Purple Accent Referensi) */
+  --bg: #F2F2F7; --tx: #1C1C1E; --txm: #8E8E93; 
+  --gl: rgba(255,255,255,0.6); --gb: rgba(255,255,255,0.8);
   --blue: #0A84FF; --red: #FF453A; --purple: #BF5AF2; 
   --green: #32D74B; --orange: #FF9F0A; --teal: #30B0C7; --indigo: #5856D6;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-  min-height: 100vh; background: var(--bg); color: var(--tx);
+  min-height: 100vh; background: #E8E8ED; color: var(--tx);
   -webkit-font-smoothing: antialiased; padding-bottom: 110px; overflow-x: hidden;
 }
-/* DARK MESH BG ADJUSTMENT */
 .mesh-bg {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
   background-image: 
-    radial-gradient(at 10% 0%, rgba(88,86,214,0.15) 0, transparent 40%), /* Dark Indigo */
-    radial-gradient(at 90% 10%, rgba(48,176,199,0.12) 0, transparent 40%), /* Dark Teal */
-    radial-gradient(at 50% 90%, rgba(191,90,242,0.10) 0, transparent 50%); /* Dark Purple */
+    radial-gradient(at 10% 0%, rgba(88,86,214,0.12) 0, transparent 40%), 
+    radial-gradient(at 90% 10%, rgba(48,176,199,0.1) 0, transparent 40%),
+    radial-gradient(at 50% 90%, rgba(191,90,242,0.08) 0, transparent 50%);
   filter: blur(40px);
 }
 @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(255,69,58,0.2)} 70%{box-shadow:0 0 0 20px rgba(255,69,58,0)} 100%{box-shadow:0 0 0 0 rgba(255,69,58,0)} }
-
-/* DARK GLASSMORPH ELEMENT (.gl) */
 .gl {
-  background: var(--gl);
-  -webkit-backdrop-filter: blur(60px) saturate(180%);
-  backdrop-filter: blur(60px) saturate(180%);
-  border: 1px solid var(--gl-border);
-  border-radius: 28px;
-  /* Shadow disesuaikan untuk latar gelap */
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.03);
+  background: var(--gl); -webkit-backdrop-filter: blur(60px) saturate(220%); backdrop-filter: blur(60px) saturate(220%);
+  border: 1px solid rgba(255,255,255,0.7); border-radius: 28px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.04), inset 0 1px 1px rgba(255,255,255,.9);
 }
-
 .pill { border-radius: 100px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.2px;}
 button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: all .15s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; cursor: pointer; }
 button:active { transform: scale(.96); opacity: 0.8; }
 button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 .btab-container { position: fixed; bottom: env(safe-area-inset-bottom, 16px); left: 16px; right: 16px; z-index: 100; display: flex; justify-content: center; }
-
-/* DARK DYNAMIC ISLAND NAVIGATION */
 .btab {
-  display: flex;
-  background: rgba(25,25,28,0.75); /* Dark translucent background */
-  -webkit-backdrop-filter: blur(40px) saturate(160%);
-  backdrop-filter: blur(40px) saturate(160%);
-  border: 1px solid var(--gl-border);
-  padding: 6px; border-radius: 100px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); gap: 4px;
+  display: flex; background: rgba(255,255,255,0.85); -webkit-backdrop-filter: blur(40px) saturate(200%); backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.6); padding: 6px; border-radius: 100px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); gap: 4px;
 }
 .btab button {
   flex: 1; min-width: 80px; border: none; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 8px 16px; font-size: 10px; font-weight: 700; color: var(--txm); border-radius: 100px; transition: 0.3s;
+  padding: 8px 16px; font-size: 10px; font-weight: 700; color: #8E8E93; border-radius: 100px; transition: 0.3s;
 }
-/* TAB AKTIF: Menggunakan warna Ungu SF Symbol Referensi */
-.btab button.on {
-  background: var(--purple);
-  color: #FFF;
-  box-shadow: 0 4px 12px rgba(191,90,242,0.25);
-  transform: scale(1.02);
-}
-
-/* DARK INPUT FIELD */
-.fi {
-  font-family: inherit; font-size: 15px; padding: 14px 16px; border-radius: 16px;
-  border: 1px solid var(--gl-border);
-  background: rgba(0,0,0,0.2); /* Dark input background */
-  color: var(--tx); /* Light text in input */
-  outline: none; width: 100%; transition: 0.2s;
-}
-.fi:focus {
-  border-color: rgba(191,90,242,0.6); /* Purple accent on focus */
-  background: rgba(0,0,0,0.3);
-  box-shadow: 0 0 0 4px rgba(191,90,242,0.1);
-}
-
-/* DARK CARDS */
-.card-note {
-  background: var(--gl);
-  -webkit-backdrop-filter: blur(60px);
-  backdrop-filter: blur(60px);
-  border: 1px solid var(--gl-border);
-  border-radius: 20px;
-  padding: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-.spinner { border: 3px solid rgba(191,90,242,0.2); border-top: 3px solid #BF5AF2; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
-.exec-card { background: linear-gradient(135deg, rgba(191,90,242,0.08), rgba(88,86,214,0.08)); border: 1px solid rgba(191,90,242,0.3); }
+.btab button.on { background: #FFF; color: #1C1C1E; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transform: scale(1.02); }
+.fi { font-family: inherit; font-size: 15px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.6); outline: none; width: 100%; transition: 0.2s; }
+.fi:focus { border-color: rgba(88,86,214,0.4); background: #FFF; box-shadow: 0 0 0 4px rgba(88,86,214,0.1); }
+.card-note { background: #FFF; border-radius: 20px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
+.spinner { border: 3px solid rgba(88,86,214,0.2); border-top: 3px solid #5856D6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
+.exec-card { background: linear-gradient(135deg, rgba(191,90,242,0.04), rgba(88,86,214,0.04)); border: 1px solid rgba(191,90,242,0.15); }
 
 /* Timeline UI Base */
 .timeline-container { position: relative; padding-left: 24px; margin-top: 12px; }
-.timeline-line { position: absolute; left: 6px; top: 8px; bottom: 0; width: 2px; background: rgba(255,255,255,0.06); border-radius: 2px; }
-.timeline-dot { position: absolute; left: -23px; top: 16px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--bg); box-shadow: 0 0 0 1px rgba(255,255,255,0.06); z-index: 2; }
+.timeline-line { position: absolute; left: 6px; top: 8px; bottom: 0; width: 2px; background: rgba(0,0,0,0.06); border-radius: 2px; }
+.timeline-dot { position: absolute; left: -23px; top: 16px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid #FFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.06); z-index: 2; }
 
 /* Hide Scrollbar for Horizontal List */
 .hide-scroll::-webkit-scrollbar { display: none; }
@@ -168,22 +116,22 @@ function FmtText(p) {
          var content = str.substring(marker.length).trim();
          return h`<div key=${i} style=${{display:"flex", gap:10, marginBottom:10, alignItems:"flex-start"}}>
            <span style=${{color:p.color||"#BF5AF2", fontWeight:800, minWidth:18, flexShrink:0, textAlign:"right"}}>${marker.replace('-','•').trim()}</span>
-           <span style=${{flex:1, lineHeight:1.6, color:var(--tx), fontWeight:500}}>${content}</span>
+           <span style=${{flex:1, lineHeight:1.6, color:"#1C1C1E", fontWeight:500}}>${content}</span>
          </div>`;
       } else {
-         return h`<div key=${i} style=${{marginBottom:12, marginTop:4, lineHeight:1.6, color:var(--tx), fontWeight:700}}>${str}</div>`;
+         return h`<div key=${i} style=${{marginBottom:12, marginTop:4, lineHeight:1.6, color:"#1C1C1E", fontWeight:700}}>${str}</div>`;
       }
     })}
   </div>`;
 }
 
-/* ═══ ICON LIBRARY (Updated to Light Icons) ═══ */
+/* ═══ ICON LIBRARY ═══ */
 function Ic(p){
   var s=p.size||20,c=p.color||"currentColor",paths={
     mic:"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4 M8 23h8",
     stop:"M6 6h12v12H6z", play:"M5 3l14 9-14 9V3z", check:"M20 6L9 17l-5-5",
     file:"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8",
-    settings:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z",
+    settings:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z",
     trash:"M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6",
     sparkle:"M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z",
     clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2", layers:"M12 2L2 7l10 5 10-5-10-5z M2 12l10 5 10-5 M2 17l10 5 10-5",
@@ -276,16 +224,16 @@ function LevelMeter(p){
         var yy = (H-ht)/2;
 
         if(ht > 5){
-          x.fillStyle = weight > 0.6 ? "#FF453A" : "rgba(191,90,242,0.8)";
+          x.fillStyle = weight > 0.6 ? "rgba(255,69,58,0.9)" : "rgba(191,90,242,0.8)";
         } else {
-          x.fillStyle = "rgba(255,255,255,0.06)";
+          x.fillStyle = "rgba(0,0,0,0.06)";
         }
         x.beginPath(); x.roundRect(xx,yy,bw,ht,bw/2); x.fill();
       }
     }
     draw(); return function(){cancelAnimationFrame(rf.current)};
   },[p.an]);
-  return h`<canvas ref=${cv} style=${{width:"100%",height:44,borderRadius:16,background:"rgba(0,0,0,0.4)",display:"block",border:"1px solid var(--gl-border)"}}/>`;
+  return h`<canvas ref=${cv} style=${{width:"100%",height:44,borderRadius:16,background:"rgba(255,255,255,0.4)",display:"block",border:"1px solid rgba(255,255,255,0.6)"}}/>`;
 }
 
 /* ═══════════════════════════════════════
@@ -412,28 +360,28 @@ function RecTab(p){
 
   return h`<div className="tab-content" style=${{maxWidth:500, margin:"0 auto", padding:"32px 16px 20px"}}>
     <div style=${{textAlign:"center", marginBottom:20}}>
-      <div className="pill" style=${{background:"rgba(191,90,242,0.15)",color:var(--purple),marginBottom:12}}>
-        <${Ic} name="bot" size=${13} color={var(--purple)}/>SMART PIPELINE AI
+      <div className="pill" style=${{background:"rgba(88,86,214,0.15)",color:"#5856D6",marginBottom:12}}>
+        <${Ic} name="bot" size=${13} color="#5856D6"/>SMART PIPELINE AI
       </div>
-      <h1 style=${{fontWeight:800,fontSize:28,letterSpacing:"-1px",lineHeight:1.1,color:var(--tx)}}>Smart Meeting Notes</h1>
-      <p style=${{fontSize:13,color:var(--txm),marginTop:8,fontWeight:500}}>Transkripsi Real-time & Multi Format</p>
+      <h1 style=${{fontWeight:800,fontSize:28,letterSpacing:"-1px",lineHeight:1.1,color:"#1C1C1E"}}>Smart Meeting Notes</h1>
+      <p style=${{fontSize:13,color:"#8E8E93",marginTop:8,fontWeight:500}}>Transkripsi Real-time & Multi Format</p>
     </div>
 
     <div className="gl" style=${{padding:24,textAlign:"center",marginBottom:24,position:"relative"}}>
-      <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:isRec?"rgba(255,69,58,0.15)":"rgba(191,90,242,0.1)",color:isRec?var(--red):var(--purple),animation:isRec?"ripple 2s infinite":"none",marginBottom:16,boxShadow:isRec?"0 0 20px rgba(255,69,58,0.3)":""}}>
+      <div style=${{display:"inline-flex",justifyContent:"center",alignItems:"center",width:88,height:88,borderRadius:44,background:isRec?"rgba(255,69,58,0.12)":"rgba(88,86,214,0.1)",color:isRec?"#FF453A":"#5856D6",animation:isRec?"ripple 2s infinite":"none",marginBottom:16,boxShadow:isRec?"0 0 20px rgba(255,69,58,0.2)":""}}>
         <${Ic} name=${isRec?"mic":"play"} size=${40}/>
       </div>
 
-      <div style=${{fontSize:36,fontWeight:800,fontFamily:"'SF Mono',monospace",letterSpacing:-1.5,color:isRec?var(--red):var(--tx),marginBottom:8}}>
+      <div style=${{fontSize:36,fontWeight:800,fontFamily:"'SF Mono',monospace",letterSpacing:-1.5,color:isRec?"#FF453A":"#1C1C1E",marginBottom:8}}>
         ${fmt(time)}
       </div>
 
-      ${isRec && h`<div className="pill" style=${{background:"rgba(50,215,75,0.15)",color:var(--green),marginBottom:12}}>
-        <div style=${{width:6,height:6,borderRadius:3,background:var(--green),animation:"pulse 1.2s infinite"}}/> Sedang Merekam...
+      ${isRec && h`<div className="pill" style=${{background:"rgba(50,215,75,0.15)",color:"#32D74B",marginBottom:12}}>
+        <div style=${{width:6,height:6,borderRadius:3,background:"#32D74B",animation:"pulse 1.2s infinite"}}/> Sedang Merekam...
       </div>`}
 
-      ${saving && h`<div className="pill" style=${{background:success?"rgba(50,215,75,0.15)":"rgba(191,90,242,0.15)",color:success?var(--green):var(--purple),marginBottom:12,transition:"0.3s"}}>
-        ${success ? h`<${Ic} name="check" size=${14} color={var(--green)}/>` : h`<div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:var(--purple),width:12,height:12,borderWidth:2}}></div>`}
+      ${saving && h`<div className="pill" style=${{background:success?"rgba(50,215,75,0.15)":"rgba(191,90,242,0.15)",color:success?"#32D74B":"#BF5AF2",marginBottom:12,transition:"0.3s"}}>
+        ${success ? h`<${Ic} name="check" size=${14} color="#32D74B"/>` : h`<div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:"#BF5AF2",width:12,height:12,borderWidth:2}}></div>`}
         ${statusMsg}
       </div>`}
 
@@ -444,11 +392,11 @@ function RecTab(p){
       </div>`}
 
       <div style=${{display:"flex",gap:12}}>
-        ${!isRec && time===0 && !saving ? h`<button onClick=${startRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(191,90,242,0.3)"}}>
+        ${!isRec && time===0 && !saving ? h`<button onClick=${startRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"linear-gradient(135deg,#5856D6,#7B79E8)",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(88,86,214,0.3)"}}>
           <span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name="mic" size=${18} color="#FFF"/>Mulai Rapat</span>
         </button>` : null}
 
-        ${isRec ? h`<button onClick=${stopRec} style=${{flex:1,padding:"16px",borderRadius:20,background:var(--red),color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(255,69,58,0.3)"}}>
+        ${isRec ? h`<button onClick=${stopRec} style=${{flex:1,padding:"16px",borderRadius:20,background:"#FF453A",color:"#FFF",border:"none",fontSize:15,fontWeight:700,boxShadow:"0 8px 24px rgba(255,69,58,0.3)"}}>
           <span style=${{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><${Ic} name="stop" size=${18} color="#FFF"/>Akhiri Rapat</span>
         </button>` : null}
       </div>
@@ -457,30 +405,30 @@ function RecTab(p){
     ${!isRec && time===0 && !saving ? h`<div className="gl" style=${{padding:16,marginBottom:24}}>
       <div style=${{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
          <div style=${{display:"flex",alignItems:"center",gap:8}}>
-           <div style=${{width:28,height:28,borderRadius:10,background:"rgba(191,90,242,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:var(--purple)}}><${Ic} name="settings" size=${16}/></div>
-           <span style=${{fontWeight:700,fontSize:14,color:var(--tx)}}>Pengaturan Cepat</span>
+           <div style=${{width:28,height:28,borderRadius:10,background:"rgba(191,90,242,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#BF5AF2"}}><${Ic} name="settings" size=${16}/></div>
+           <span style=${{fontWeight:700,fontSize:14}}>Pengaturan Cepat</span>
          </div>
-         <div style=${{display:"flex",alignItems:"center",gap:6,fontSize:11,fontWeight:600,color:window.__AK?var(--green):var(--red)}}>
-           <div style=${{width:8,height:8,borderRadius:4,background:window.__AK?var(--green):var(--red)}}></div>
+         <div style=${{display:"flex",alignItems:"center",gap:6,fontSize:11,fontWeight:600,color:window.__AK?"#32D74B":"#FF453A"}}>
+           <div style=${{width:8,height:8,borderRadius:4,background:window.__AK?"#32D74B":"#FF453A"}}></div>
            ${window.__AK ? "API Aktif" : "API Kosong"}
          </div>
       </div>
       <div style=${{display:"flex",gap:12}}>
         <div style=${{flex:1}}>
-          <div style=${{fontSize:11,fontWeight:600,color:var(--txm),marginBottom:6}}>Bahasa</div>
-          <div style=${{display:"flex",gap:4,background:"rgba(255,255,255,0.04)",padding:4,borderRadius:12}}>
+          <div style=${{fontSize:11,fontWeight:600,color:"#8E8E93",marginBottom:6}}>Bahasa</div>
+          <div style=${{display:"flex",gap:4,background:"rgba(0,0,0,0.04)",padding:4,borderRadius:12}}>
             ${[["id-ID","ID"],["en-US","EN"]].map(function(l){
               var on=set.lang===l[0];
-              return h`<button key=${l[0]} onClick=${function(){updSet("lang",l[0])}} style=${{flex:1,padding:"8px 0",borderRadius:8,border:"none",background:on?"#FFF":"transparent",boxShadow:on?"0 2px 8px rgba(0,0,0,0.2)":"none",fontSize:12,fontWeight:700,color:on?"#0A0A0C":var(--txm)}}>${l[1]}</button>`;
+              return h`<button key=${l[0]} onClick=${function(){updSet("lang",l[0])}} style=${{flex:1,padding:"8px 0",borderRadius:8,border:"none",background:on?"#FFF":"transparent",boxShadow:on?"0 2px 8px rgba(0,0,0,0.06)":"none",fontSize:12,fontWeight:700,color:on?"#1C1C1E":"#8E8E93"}}>${l[1]}</button>`;
             })}
           </div>
         </div>
         <div style=${{flex:1}}>
-          <div style=${{fontSize:11,fontWeight:600,color:var(--txm),marginBottom:6}}>Chunk AI (Detik)</div>
-          <div style=${{display:"flex",gap:4,background:"rgba(255,255,255,0.04)",padding:4,borderRadius:12}}>
+          <div style=${{fontSize:11,fontWeight:600,color:"#8E8E93",marginBottom:6}}>Chunk AI (Detik)</div>
+          <div style=${{display:"flex",gap:4,background:"rgba(0,0,0,0.04)",padding:4,borderRadius:12}}>
             ${[15,30,60].map(function(v){
               var on=(set.chunk||30)===v;
-              return h`<button key=${v} onClick=${function(){updSet("chunk",v)}} style=${{flex:1,padding:"8px 0",borderRadius:8,border:"none",background:on?"#FFF":"transparent",boxShadow:on?"0 2px 8px rgba(0,0,0,0.2)":"none",fontSize:12,fontWeight:700,color:on?"#0A0A0C":var(--txm)}}>${v}</button>`;
+              return h`<button key=${v} onClick=${function(){updSet("chunk",v)}} style=${{flex:1,padding:"8px 0",borderRadius:8,border:"none",background:on?"#FFF":"transparent",boxShadow:on?"0 2px 8px rgba(0,0,0,0.06)":"none",fontSize:12,fontWeight:700,color:on?"#1C1C1E":"#8E8E93"}}>${v}</button>`;
             })}
           </div>
         </div>
@@ -488,22 +436,22 @@ function RecTab(p){
     </div>` : null}
 
     ${(notes.length > 0 || fin.length > 0) ? h`<div>
-      <div style=${{fontSize:13,fontWeight:800,color:var(--tx),marginBottom:16,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase", borderBottom:"1px solid rgba(255,255,255,0.06)", paddingBottom:12}}><${Ic} name="sparkle" size=${16} color={var(--purple)}/> Live Timeline</div>
+      <div style=${{fontSize:13,fontWeight:800,color:"#1C1C1E",marginBottom:16,display:"flex",alignItems:"center",gap:6,letterSpacing:"0.5px",textTransform:"uppercase", borderBottom:"1px solid rgba(0,0,0,0.06)", paddingBottom:12}}><${Ic} name="sparkle" size=${16} color="#BF5AF2"/> Live Timeline</div>
       
       <div className="timeline-container">
         <div className="timeline-line"></div>
-        ${fin.length === 0 ? h`<div style=${{fontSize:13,color:var(--txm),fontStyle:"italic"}}>Mendengarkan percakapan...</div>` : null}
+        ${fin.length === 0 ? h`<div style=${{fontSize:13,color:"#8E8E93",fontStyle:"italic"}}>Mendengarkan percakapan...</div>` : null}
         
         ${fin.map(function(f){
           var n = notes.find(function(item){ return item.time === f.time });
           return h`<div key=${f.id} style=${{position:"relative", marginBottom:24, animation:"fadeIn 0.4s ease-out"}}>
-            <div className="timeline-dot" style=${{background:var(--purple)}}></div>
-            <div style=${{fontSize:11,color:var(--purple),fontWeight:800,marginBottom:6,display:"flex",alignItems:"center",gap:6}}> Menit ${fmt(f.time)} </div>
+            <div className="timeline-dot" style=${{background:"#BF5AF2"}}></div>
+            <div style=${{fontSize:11,color:"#BF5AF2",fontWeight:800,marginBottom:6,display:"flex",alignItems:"center",gap:6}}> Menit ${fmt(f.time)} </div>
             <div className="card-note" style=${{padding:"16px", marginBottom:8}}>
-              ${n ? h`<${FmtText} text=${n.text} color={var(--purple)}/>` : h`<div style=${{fontSize:13,color:var(--purple),fontStyle:"italic",marginBottom:12,display:"flex",alignItems:"center",gap:6}}><div className="spinner" style=${{width:10,height:10,borderWidth:2,borderColor:"rgba(191,90,242,0.2)",borderTopColor:var(--purple)}}></div> AI sedang merangkum...</div>`}
-              <div style=${{paddingTop:12, borderTop:"1px solid rgba(255,255,255,0.05)"}}>
-                 <div style=${{fontSize:10,fontWeight:700,color:var(--txm),marginBottom:6,textTransform:"uppercase"}}>Transkrip Mentah</div>
-                 <div style=${{fontSize:13,lineHeight:1.6,color:var(--tx)}}>${f.text}</div>
+              ${n ? h`<${FmtText} text=${n.text} color="#BF5AF2"/>` : h`<div style=${{fontSize:13,color:"#BF5AF2",fontStyle:"italic",marginBottom:12,display:"flex",alignItems:"center",gap:6}}><div className="spinner" style=${{width:10,height:10,borderWidth:2}}></div> AI sedang merangkum...</div>`}
+              <div style=${{paddingTop:12, borderTop:"1px solid rgba(0,0,0,0.05)"}}>
+                 <div style=${{fontSize:10,fontWeight:700,color:"#8E8E93",marginBottom:6,textTransform:"uppercase"}}>Transkrip Mentah</div>
+                 <div style=${{fontSize:13,lineHeight:1.6,color:"#636366"}}>${f.text}</div>
               </div>
             </div>
           </div>`
@@ -515,7 +463,7 @@ function RecTab(p){
 }
 
 /* ═══════════════════════
-   TAB: RIWAYAT & EXPORT (Updated Dark Styles)
+   TAB: RIWAYAT & EXPORT
    ═══════════════════════ */
 function HistTab(p){
   var _h=us(DB.get().history), hist=_h[0], setH=_h[1];
@@ -557,6 +505,7 @@ function HistTab(p){
     html += "<h1 style='text-align:center; font-family:Arial, sans-serif;'>" + (item.title||"Notulen Rapat") + "</h1>";
     html += "<p style='text-align:center; font-family:Arial, sans-serif;'><strong>Tanggal:</strong> " + new Date(item.date).toLocaleString("id-ID") + " | <strong>Durasi:</strong> " + fmt(item.duration) + "</p>";
     html += "<hr>";
+
     if(item.overall) {
       html += "<h2 style='color:#6a1b9a; font-family:Arial, sans-serif;'>" + (item.formatName || "Ringkasan Eksekutif") + "</h2>";
       var lines = item.overall.split('\n').filter(function(x){return x.trim().length>0});
@@ -574,11 +523,14 @@ function HistTab(p){
       });
       if(inList) html += "</ul>";
     }
+    
     if(item.transcript) {
       html += "<h2 style='color:#283593; font-family:Arial, sans-serif; margin-top:20px;'>Transkrip Mentah</h2>";
       html += "<p style='font-family:Arial, sans-serif;'>" + item.transcript.replace(/\n/g, '<br>') + "</p>";
     }
+    
     html += "</body></html>";
+    
     var blob = new Blob(['\ufeff', html], { type: 'application/msword' });
     var url = URL.createObjectURL(blob);
     var link = document.createElement('A');
@@ -591,9 +543,11 @@ function HistTab(p){
      element.style.padding = '20px';
      element.style.fontFamily = 'Helvetica, Arial, sans-serif';
      element.style.color = '#333';
+     
      var html = "<h1 style='text-align:center; color:#1C1C1E; font-size:22px;'>" + (item.title||"Notulen Rapat") + "</h1>";
      html += "<p style='text-align:center; color:#8E8E93; font-size:11px;'>Tanggal: " + new Date(item.date).toLocaleString("id-ID") + " | Durasi: " + fmt(item.duration) + "</p>";
      html += "<hr style='border:0; border-top:1px solid #E5E5EA; margin: 15px 0;'>";
+
      if(item.overall) {
        html += "<h2 style='color:#BF5AF2; font-size:16px; margin-bottom:8px;'>" + (item.formatName || "Ringkasan Eksekutif") + "</h2>";
        var lines = item.overall.split('\n').filter(function(x){return x.trim().length>0});
@@ -611,14 +565,21 @@ function HistTab(p){
        });
        if(inList) html += "</ul>";
      }
+
      if(item.transcript) {
        html += "<h2 style='color:#5856D6; font-size:16px; margin-top:20px; margin-bottom:8px;'>Transkrip Mentah</h2>";
        html += "<div style='font-size:11px; line-height:1.5; color:#48484A; white-space:pre-wrap;'>" + item.transcript + "</div>";
      }
+     
      element.innerHTML = html;
      var opt = {
-       margin: 15, filename: (item.title||"Notulen") + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+       margin:       15,
+       filename:     (item.title||"Notulen") + '.pdf',
+       image:        { type: 'jpeg', quality: 0.98 },
+       html2canvas:  { scale: 2 },
+       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
      };
+     
      if(typeof html2pdf !== 'undefined') {
         alert("Menyiapkan file PDF, mohon tunggu sebentar...");
         html2pdf().set(opt).from(element).save();
@@ -628,52 +589,52 @@ function HistTab(p){
   }
   
   if(!hist.length) return h`<div className="tab-content" style=${{padding:"80px 20px",textAlign:"center"}}>
-    <${Ic} name="file" size=${56} color="#48484A" sw=${1.5}/>
-    <div style=${{fontSize:18,fontWeight:700,color:var(--txm),marginTop:20}}>Belum ada notulen</div>
-    <div style=${{fontSize:14,color:"#48484A",marginTop:6}}>Rapat yang disimpan akan otomatis muncul di sini.</div>
+    <${Ic} name="file" size=${56} color="#C7C7CC" sw=${1.5}/>
+    <div style=${{fontSize:18,fontWeight:700,color:"#8E8E93",marginTop:20}}>Belum ada notulen</div>
+    <div style=${{fontSize:14,color:"#C7C7CC",marginTop:6}}>Rapat yang disimpan akan otomatis muncul di sini.</div>
   </div>`;
 
   return h`<div className="tab-content" style=${{maxWidth:500, margin:"0 auto", padding:"32px 16px"}}>
-    <h2 style=${{fontSize:26,fontWeight:800,marginBottom:20,letterSpacing:"-0.5px",textAlign:"center",color:var(--tx)}}>Riwayat Rapat</h2>
+    <h2 style=${{fontSize:26,fontWeight:800,marginBottom:20,letterSpacing:"-0.5px",textAlign:"center"}}>Riwayat Rapat</h2>
     ${hist.map(function(item){
       var isOpen = openId===item.id;
-      return h`<div key=${item.id} className="gl" style=${{marginBottom:16,overflow:"hidden",background:isOpen?var(--gb):var(--gl),transition:"all 0.3s",animation:"slideUp 0.3s ease-out"}}>
+      return h`<div key=${item.id} className="gl" style=${{marginBottom:16,overflow:"hidden",background:isOpen?"#FFF":"var(--gl)",transition:"all 0.3s",animation:"slideUp 0.3s ease-out"}}>
         <div onClick=${function(){setOpen(isOpen?null:item.id)}} style=${{padding:"16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14}}>
-          <div style=${{width:46,height:46,borderRadius:14,background:"rgba(255,255,255,0.03)",display:"flex",alignItems:"center",justifyContent:"center",color:var(--purple),flexShrink:0,border:"1px solid var(--gl-border)"}}><${Ic} name="file" size=${22}/></div>
+          <div style=${{width:46,height:46,borderRadius:14,background:"rgba(88,86,214,0.08)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6",flexShrink:0}}><${Ic} name="file" size=${22}/></div>
           <div style=${{flex:1,minWidth:0}}>
-            <div style=${{fontWeight:700,fontSize:16,color:var(--tx),overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${item.title||"Rapat"}</div>
-            <div style=${{fontSize:12,color:var(--txm),marginTop:4,fontWeight:500}}>
+            <div style=${{fontWeight:700,fontSize:16,color:"#1C1C1E",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${item.title||"Rapat"}</div>
+            <div style=${{fontSize:12,color:"#8E8E93",marginTop:4,fontWeight:500}}>
               ${new Date(item.date).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})} · Durasi: ${fmt(item.duration)}
             </div>
           </div>
-          <div style=${{width:30,height:30,borderRadius:15,background:"rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={var(--txm)} strokeWidth="2.5" style=${{transform:isOpen?"rotate(90deg)":"none",transition:"0.3s"}}><path d="M9 18l6-6-6-6"/></svg>
+          <div style=${{width:30,height:30,borderRadius:15,background:"rgba(0,0,0,0.04)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="2.5" style=${{transform:isOpen?"rotate(90deg)":"none",transition:"0.3s"}}><path d="M9 18l6-6-6-6"/></svg>
           </div>
         </div>
 
         ${isOpen ? h`<div style=${{padding:"0 16px 20px",animation:"fadeIn .3s"}}>
           
           <div style=${{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-            <button onClick=${function(e){e.stopPropagation();exportWord(item)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(10,132,255,0.15)",color:var(--blue),fontSize:12,fontWeight:700,border:"none"}}>
-              <${Ic} name="download" size=${14} color={var(--blue)}/> Word
+            <button onClick=${function(e){e.stopPropagation();exportWord(item)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(10,132,255,0.1)",color:"#0A84FF",fontSize:12,fontWeight:700,border:"none"}}>
+              <${Ic} name="download" size=${14} color="#0A84FF"/> Word
             </button>
-            <button onClick=${function(e){e.stopPropagation();exportPDF(item)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(255,159,10,0.15)",color:var(--orange),fontSize:12,fontWeight:700,border:"none"}}>
-              <${Ic} name="download" size=${14} color={var(--orange)}/> PDF
+            <button onClick=${function(e){e.stopPropagation();exportPDF(item)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(255,159,10,0.1)",color:"#FF9F0A",fontSize:12,fontWeight:700,border:"none"}}>
+              <${Ic} name="download" size=${14} color="#FF9F0A"/> PDF
             </button>
             <div style=${{flex:1}}></div>
-            <button onClick=${function(e){e.stopPropagation();del(item.id)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(255,69,58,0.15)",color:var(--red),fontSize:12,fontWeight:700,border:"none"}}>
-              <${Ic} name="trash" size=${14} color={var(--red)}/>Hapus
+            <button onClick=${function(e){e.stopPropagation();del(item.id)}} style=${{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:12,background:"rgba(255,69,58,0.08)",color:"#FF453A",fontSize:12,fontWeight:700,border:"none"}}>
+              <${Ic} name="trash" size=${14} color="#FF453A"/>Hapus
             </button>
           </div>
 
           <div style=${{marginBottom: 20}}>
-            <div style=${{fontSize:11,fontWeight:800,color:var(--txm),marginBottom:8,letterSpacing:"0.5px"}}>UBAH GAYA RINGKASAN:</div>
+            <div style=${{fontSize:11,fontWeight:800,color:"#8E8E93",marginBottom:8,letterSpacing:"0.5px"}}>UBAH GAYA RINGKASAN:</div>
             <div className="hide-scroll" style=${{display:"flex", gap:8, overflowX:"auto", paddingBottom:4, WebkitOverflowScrolling:"touch"}}>
               ${formatOptions.map(function(f){
                 var isCurrent = item.formatType === f.id || (item.formatName === f.label) || (!item.formatType && f.id === 'executive');
                 return h`<button key=${f.id} onClick=${function(){ changeFormat(item, f.id, f.label) }} disabled=${regenId === item.id}
-                  style=${{flexShrink:0, display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:"100px", border:"1px solid "+(isCurrent?"rgba(191,90,242,0.6)":"rgba(255,255,255,0.06)"), background:isCurrent?"rgba(191,90,242,0.15)":"rgba(255,255,255,0.03)", color:isCurrent?var(--purple):var(--txm), fontSize:12, fontWeight:700, transition:"0.2s"}}>
-                  <${Ic} name=${f.icon} size=${14} color=${isCurrent?var(--purple):var(--txm)}/>
+                  style=${{flexShrink:0, display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:"100px", border:"1px solid "+(isCurrent?"rgba(191,90,242,0.4)":"rgba(0,0,0,0.06)"), background:isCurrent?"rgba(191,90,242,0.06)":"#FFF", color:isCurrent?"#BF5AF2":"#8E8E93", fontSize:12, fontWeight:700, transition:"0.2s"}}>
+                  <${Ic} name=${f.icon} size=${14} color=${isCurrent?"#BF5AF2":"#8E8E93"}/>
                   <span>${f.label}</span>
                 </button>`
               })}
@@ -681,31 +642,31 @@ function HistTab(p){
           </div>
 
           ${item.overall ? h`<div style=${{marginBottom:24}}>
-            <div style=${{fontSize:12,fontWeight:800,color:var(--purple),textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
-              <${Ic} name="sparkle" size=${16} color={var(--purple)}/>${item.formatName || "Ringkasan Eksekutif"}
+            <div style=${{fontSize:12,fontWeight:800,color:"#BF5AF2",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
+              <${Ic} name="sparkle" size=${16} color="#BF5AF2"/>${item.formatName || "Ringkasan Eksekutif"}
             </div>
             
-            <div className="card-note exec-card" style=${{padding:"20px", position:"relative", minHeight:80, background:"rgba(0,0,0,0.2)"}}>
+            <div className="card-note exec-card" style=${{padding:"20px", position:"relative", minHeight:80}}>
               ${regenId === item.id ? h`<div style=${{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"20px 0"}}>
-                 <div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:var(--purple),width:20,height:20,borderWidth:3,marginBottom:12}}></div>
-                 <div style=${{fontSize:13,color:var(--purple),fontWeight:700}}>Menyusun format baru...</div>
+                 <div className="spinner" style=${{borderColor:"rgba(191,90,242,0.2)",borderTopColor:"#BF5AF2",width:20,height:20,borderWidth:3,marginBottom:12}}></div>
+                 <div style=${{fontSize:13,color:"#BF5AF2",fontWeight:700}}>Menyusun format baru...</div>
               </div>` : 
-              h`<${FmtText} text=${item.overall} color={var(--purple)}/>`}
+              h`<${FmtText} text=${item.overall} color="#BF5AF2"/>`}
             </div>
           </div>` : null}
 
           ${item.notes ? h`<div style=${{marginBottom:24}}>
-            <div style=${{fontSize:12,fontWeight:800,color:var(--indigo),textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
-              <${Ic} name="clock" size=${16} color={var(--indigo)}/>Timeline
+            <div style=${{fontSize:12,fontWeight:800,color:"#5856D6",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
+              <${Ic} name="clock" size=${16} color="#5856D6"/>Timeline
             </div>
-            <div className="card-note" style=${{background:"rgba(0,0,0,0.2)",border:"1px solid var(--gl-border)",boxShadow:"none",padding:"16px"}}>
-               <${FmtText} text=${item.notes} color={var(--indigo)}/>
+            <div className="card-note" style=${{background:"rgba(0,0,0,0.02)",border:"none",boxShadow:"none",padding:"16px"}}>
+               <${FmtText} text=${item.notes} color="#5856D6"/>
             </div>
           </div>` : null}
 
           <div>
-            <div style=${{fontSize:12,fontWeight:800,color:var(--txm),textTransform:"uppercase",letterSpacing:"1px",marginBottom:10}}>Transkrip Mentah</div>
-            <div style=${{maxHeight:250,overflowY:"auto",background:"rgba(0,0,0,0.3)",borderRadius:16,padding:16,border:"1px solid var(--gl-border)",fontSize:13,lineHeight:1.6,color:var(--tx),whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+            <div style=${{fontSize:12,fontWeight:800,color:"#8E8E93",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10}}>Transkrip Mentah</div>
+            <div style=${{maxHeight:250,overflowY:"auto",background:"#FFF",borderRadius:16,padding:16,border:"1px solid rgba(0,0,0,0.06)",fontSize:13,lineHeight:1.6,color:"#636366",whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
               ${item.transcript || "(kosong)"}
             </div>
           </div>
@@ -716,15 +677,14 @@ function HistTab(p){
 }
 
 /* ═══════════════════════
-   TAB: PENGATURAN (Updated Dark Utilites)
+   TAB: PENGATURAN
    ═══════════════════════ */
 function SetTab(p){
   var set=p.set, updSet=p.updSet;
   var _sk=us(false), sk=_sk[0], sSk=_sk[1];
 
-  /* FUNGSI GENERATE ICON BARU (Gelombang Putih Latar Hitam) */
   function downloadIcon() {
-    var svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512"><rect width="100" height="100" fill="#0A0A0C" rx="22"/><path d="M30,50 a3,3 0 0,1 6,0 v12 a3,3 0 0,1 -6,0 z M44,40 a3,3 0 0,1 6,0 v32 a3,3 0 0,1 -6,0 z M58,62 a3,3 0 0,1 6,0 v10 a3,3 0 0,1 -6,0 z" fill="#fff"/><path d="M70,30 C70,35 65,40 60,40 C65,40 70,45 70,50 C70,45 75,40 80,40 C75,40 70,35 70,30 Z" fill="#fff"/></svg>`;
+    var svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#333"/><stop offset="100%" stop-color="#111"/></linearGradient></defs><rect width="100" height="100" fill="url(#bg)" rx="22"/><path d="M30,50 a3,3 0 0,1 6,0 v12 a3,3 0 0,1 -6,0 z M44,40 a3,3 0 0,1 6,0 v32 a3,3 0 0,1 -6,0 z M58,62 a3,3 0 0,1 6,0 v10 a3,3 0 0,1 -6,0 z" fill="#fff"/><path d="M70,30 C70,35 65,40 60,40 C65,40 70,45 70,50 C70,45 75,40 80,40 C75,40 70,35 70,30 Z" fill="#fff"/></svg>`;
     var blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
     var url = URL.createObjectURL(blob);
     var img = new Image();
@@ -743,67 +703,68 @@ function SetTab(p){
   }
 
   return h`<div className="tab-content" style=${{maxWidth:500, margin:"0 auto", padding:"32px 16px"}}>
-    <h2 style=${{fontSize:26,fontWeight:800,marginBottom:24,letterSpacing:"-0.5px",textAlign:"center",color:var(--tx)}}>Sistem & Pengaturan</h2>
+    <h2 style=${{fontSize:26,fontWeight:800,marginBottom:24,letterSpacing:"-0.5px",textAlign:"center"}}>Sistem & Pengaturan</h2>
 
     <div className="gl" style=${{padding:24,marginBottom:16}}>
       <div style=${{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(191,90,242,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:var(--purple),border:"1px solid var(--gl-border)"}}><${Ic} name="key" size=${18}/></div>
-        <span style=${{fontWeight:800,fontSize:17,color:var(--tx)}}>API Key Integrasi</span>
+        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(88,86,214,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#5856D6"}}><${Ic} name="key" size=${18}/></div>
+        <span style=${{fontWeight:800,fontSize:17}}>API Key Integrasi</span>
       </div>
       <div style=${{marginBottom:30}}>
-        <div style=${{fontSize:12,fontWeight:700,color:var(--txm),marginBottom:8}}>Groq API Key</div>
+        <div style=${{fontSize:12,fontWeight:700,color:"#8E8E93",marginBottom:8}}>Groq API Key</div>
         <div style=${{position:"relative"}}>
           <input class="fi" type=${sk?"text":"password"} placeholder="gsk_..." value=${set.key} onInput=${function(e){updSet("key",e.target.value)}} style=${{paddingRight:48,fontWeight:500,fontSize:15}}/>
-          <button onClick=${function(){sSk(!sk)}} style=${{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",border:"none",background:"rgba(255,255,255,0.05)",borderRadius:10,padding:8}}><${Ic} name="eye" size=${18} color={var(--txm)}/></button>
+          <button onClick=${function(){sSk(!sk)}} style=${{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",border:"none",background:"rgba(0,0,0,0.05)",borderRadius:10,padding:8}}><${Ic} name="eye" size=${18} color="#8E8E93"/></button>
         </div>
       </div>
 
-      <div style=${{height:1, background:"rgba(255,255,255,0.06)", margin:"0 -24px 24px -24px"}}></div>
+      <div style=${{height:1, background:"rgba(0,0,0,0.06)", margin:"0 -24px 24px -24px"}}></div>
 
       <div style=${{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:var(--teal),border:"1px solid var(--gl-border)"}}><${Ic} name="layers" size=${18}/></div>
-        <span style=${{fontWeight:800,fontSize:17,color:var(--tx)}}>Alur Pipeline AI (Smart Mode)</span>
+        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(48,176,199,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#30B0C7"}}><${Ic} name="layers" size=${18}/></div>
+        <span style=${{fontWeight:800,fontSize:17}}>Alur Pipeline AI (Smart Mode)</span>
       </div>
       
       <div style=${{display:"flex",flexDirection:"column",gap:20}}>
          <div style=${{display:"flex",gap:14}}>
-            <div style=${{width:28,height:28,borderRadius:14,background:"#FFF",color:"#0A0A0C",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>1</div>
+            <div style=${{width:28,height:28,borderRadius:14,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>1</div>
             <div>
-               <div style=${{fontSize:14,fontWeight:800,color:var(--tx),marginBottom:4}}>Perekaman & Chunking</div>
-               <div style=${{fontSize:13,color:var(--txm),lineHeight:1.5}}>Suara direkam via MediaRecorder dan dipotong otomatis setiap ${set.chunk||30} detik.</div>
+               <div style=${{fontSize:14,fontWeight:800,color:"#1C1C1E",marginBottom:4}}>Perekaman & Chunking</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>Suara direkam via MediaRecorder dan dipotong otomatis setiap ${set.chunk||30} detik.</div>
             </div>
          </div>
          <div style=${{display:"flex",gap:14}}>
-            <div style=${{width:28,height:28,borderRadius:14,background:"#FFF",color:"#0A0A0C",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>2</div>
+            <div style=${{width:28,height:28,borderRadius:14,background:"#1C1C1E",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>2</div>
             <div>
-               <div style=${{fontSize:14,fontWeight:800,color:var(--tx),marginBottom:4}}>Whisper Transkripsi</div>
-               <div style=${{fontSize:13,color:var(--txm),lineHeight:1.5}}>Setiap potongan dikirim ke Groq untuk diubah menjadi teks mentah secara paralel.</div>
+               <div style=${{fontSize:14,fontWeight:800,color:"#1C1C1E",marginBottom:4}}>Whisper Transkripsi</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>Setiap potongan dikirim ke Groq untuk diubah menjadi teks mentah secara paralel.</div>
             </div>
          </div>
          <div style=${{display:"flex",gap:14}}>
             <div style=${{width:28,height:28,borderRadius:14,background:"linear-gradient(135deg,#BF5AF2,#5856D6)",color:"#FFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>3</div>
             <div>
-               <div style=${{fontSize:14,fontWeight:800,color:var(--purple),marginBottom:4}}>Dynamic Formatting & Export</div>
-               <div style=${{fontSize:13,color:var(--txm),lineHeight:1.5}}>Ubah gaya ringkasan di tab Riwayat dan unduh hasil rapat (PDF/Word) dalam satu klik.</div>
+               <div style=${{fontSize:14,fontWeight:800,color:"#BF5AF2",marginBottom:4}}>Dynamic Formatting & Export</div>
+               <div style=${{fontSize:13,color:"#8E8E93",lineHeight:1.5}}>Ubah gaya ringkasan di tab Riwayat dan unduh hasil rapat (PDF/Word) dalam satu klik.</div>
             </div>
          </div>
       </div>
       
-      <div style=${{height:1, background:"rgba(255,255,255,0.06)", margin:"24px -24px 24px -24px"}}></div>
+      <div style=${{height:1, background:"rgba(0,0,0,0.06)", margin:"24px -24px 24px -24px"}}></div>
 
+      <!-- UTILITY: UNDUH IKON PNG -->
       <div style=${{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(255,159,10,0.15)",display:"flex",alignItems:"center",justifyContent:"center",color:var(--orange),border:"1px solid var(--gl-border)"}}><${Ic} name="image" size=${18}/></div>
-        <span style=${{fontWeight:800,fontSize:17,color:var(--tx)}}>Ikon Aplikasi (Full Icon)</span>
+        <div style=${{width:36,height:36,borderRadius:12,background:"rgba(255,159,10,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#FF9F0A"}}><${Ic} name="image" size=${18}/></div>
+        <span style=${{fontWeight:800,fontSize:17}}>Perbaikan Ikon Safari</span>
       </div>
-      <div style=${{marginBottom:16, fontSize:13, color:var(--txm), lineHeight:1.5}}>
-        Ikon sekarang memenuhi warna (Latar Hitam, Gelombang Putih). Unduh file ini, lalu unggah ke GitHub Anda bersebelahan dengan index.html untuk perbaikan Safari.
+      <div style=${{marginBottom:16, fontSize:13, color:"#8E8E93", lineHeight:1.5}}>
+        Safari (Mac/iOS) menolak ikon berupa kode. Anda harus mengunduh file gambar asli ini lalu mengunggahnya ke GitHub.
       </div>
-      <button onClick=${downloadIcon} style=${{width:"100%", padding:"16px", borderRadius:16, background:"#FFF", color:"#0A0A0C", fontWeight:700, fontSize:14, border:"none", display:"flex", alignItems:"center", justifyContent:"center", gap:8}}>
-        <${Ic} name="download" size=${18} color="#0A0A0C"/> Unduh icon.png Baru
+      <button onClick=${downloadIcon} style=${{width:"100%", padding:"16px", borderRadius:16, background:"#1C1C1E", color:"#FFF", fontWeight:700, fontSize:14, border:"none", display:"flex", alignItems:"center", justifyContent:"center", gap:8}}>
+        <${Ic} name="download" size=${18} color="#FFF"/> Unduh icon.png
       </button>
 
-      <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(255,255,255,0.06)",fontSize:11,color:"#48484A",textAlign:"center",letterSpacing:"0.5px",fontWeight:600}}>
-        v20.0 · Full Resolution PNG Support Build (Dark Theme)
+      <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",fontSize:11,color:"#C7C7CC",textAlign:"center",letterSpacing:"0.5px",fontWeight:600}}>
+        v20.0 · Full Resolution PNG Support Build
       </div>
     </div>
   </div>`;
@@ -826,11 +787,12 @@ function App(){
       <div style=${{display: tab==="set" ? "block" : "none"}}><${SetTab} set=${settings} updSet=${updSet}/></div>
     </div>
 
+    <!-- DYNAMIC ISLAND NAVIGATION -->
     <div className="btab-container">
       <div className="btab" style=${{maxWidth: 320, width: "100%"}}>
         ${[["rec","mic","Rekam"],["hist","file","Riwayat"],["set","settings","Sistem"]].map(function(t){
           return h`<button key=${t[0]} className=${tab===t[0]?"on":""} onClick=${function(){setTab(t[0])}}>
-            < Ic} name=${t[1]} size=${22} color=${tab===t[0]?"#FFF":var(--txm)} sw=${tab===t[0]?2.5:2}/>${t[2]}
+            <${Ic} name=${t[1]} size=${22} color=${tab===t[0]?"#1C1C1E":"#8E8E93"} sw=${tab===t[0]?2.5:2}/>${t[2]}
           </button>`;
         })}
       </div>
