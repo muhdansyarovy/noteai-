@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Notulen AI — Modern iOS Notes</title>
 
-<!-- ICON FIX: URL PNG murni untuk memaksa Safari iOS membacanya -->
-<link rel="apple-touch-icon" sizes="512x512" href="https://ui-avatars.com/api/?name=AI&background=BF5AF2&color=fff&size=512&rounded=true&bold=true&font-size=0.4">
-<link rel="icon" type="image/png" sizes="512x512" href="https://ui-avatars.com/api/?name=AI&background=BF5AF2&color=fff&size=512&rounded=true&bold=true&font-size=0.4">
+<!-- ICON FIX: Custom Wave + Sparkle Icon (Base64 SVG) -->
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzMzMyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzExMSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2JnKSIgcng9IjIyIi8+PHBhdGggZD0iTTMwLDUwIGEzLDMgMCAwLDEgNiwwIHYxMiBhMywzIDAgMCwxIC02LDAgeiBNNDQsNDAgYTMsMyAwIDAsMSA2LDAgdjMyIGEzLDMgMCAwLDEgLTYsMCB6IE01OCw2MiBhMywzIDAgMCwxIDYsMCB2MTAgYTMsMyAwIDAsMSAtNiwwIHoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNzAsMzAgQzcwLDM1IDY1LDQwIDYwLDQwIEM2NSw0MCA3MCw0NSA3MCw1MCBDNzAsNDUgNzUsNDAgODAsNDAgQzc1LDQwIDcwLDM1IDcwLDMwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzMzMyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzExMSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2JnKSIgcng9IjIyIi8+PHBhdGggZD0iTTMwLDUwIGEzLDMgMCAwLDEgNiwwIHYxMiBhMywzIDAgMCwxIC02LDAgeiBNNDQsNDAgYTMsMyAwIDAsMSA2LDAgdjMyIGEzLDMgMCAwLDEgLTYsMCB6IE01OCw2MiBhMywzIDAgMCwxIDYsMCB2MTAgYTMsMyAwIDAsMSAtNiwwIHoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNzAsMzAgQzcwLDM1IDY1LDQwIDYwLDQwIEM2NSw0MCA3MCw0NSA3MCw1MCBDNzAsNDUgNzUsNDAgODAsNDAgQzc1LDQwIDcwLDM1IDcwLDMwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,11 +83,11 @@ button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 <script>
 var h=htm.bind(React.createElement),us=React.useState,ur=React.useRef,ue=React.useEffect;
 
-/* ═══ STORAGE (v18) ═══ */
+/* ═══ STORAGE (v19) ═══ */
 var DB={
-  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v18")||localStorage.getItem("notulen_v17")||"null")||this.def()}catch(e){return this.def()}},
+  get:function(){try{return JSON.parse(localStorage.getItem("notulen_v19")||localStorage.getItem("notulen_v18")||"null")||this.def()}catch(e){return this.def()}},
   def:function(){return{history:[],set:{lang:"id-ID",key:"",provider:"groq", chunk: 30}}},
-  save:function(d){localStorage.setItem("notulen_v18",JSON.stringify(d))},
+  save:function(d){localStorage.setItem("notulen_v19",JSON.stringify(d))},
   addHist:function(r){var d=this.get();d.history.unshift(r);if(d.history.length>50)d.history.length=50;this.save(d)},
   delHist:function(id){var d=this.get();d.history=d.history.filter(function(x){return x.id!==id});this.save(d)},
   getSet:function(){return this.get().set},
@@ -472,7 +472,6 @@ function HistTab(p){
   var _open=us(null), openId=_open[0], setOpen=_open[1];
   var _regen=us(null), regenId=_regen[0], setRegen=_regen[1];
 
-  // FORCE REFRESH
   ue(function(){ if(p.isActive) setH(DB.get().history); }, [p.isActive]);
 
   var formatOptions = [
@@ -733,7 +732,7 @@ function SetTab(p){
          </div>
       </div>
       <div style=${{marginTop:24,paddingTop:16,borderTop:"1px solid rgba(0,0,0,0.06)",fontSize:11,color:"#C7C7CC",textAlign:"center",letterSpacing:"0.5px",fontWeight:600}}>
-        v18.0 · Center Waveform & API Icon Build
+        v19.0 · Custom PWA Wave Icon Build
       </div>
     </div>
   </div>`;
